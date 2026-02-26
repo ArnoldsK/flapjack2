@@ -1,0 +1,45 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Discord bot + API service",
+  "main": "dist/app/src/index.js",
+  "types": "dist/app/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/app/src/index.d.ts",
+      "default": "./dist/app/src/index.js"
+    },
+    "./api/router": {
+      "types": "./dist/app/src/api/router.d.ts",
+      "default": "./dist/app/src/api/router.js"
+    }
+  },
+  "scripts": {
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only -P tsconfig.dev.json src/index.ts",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node dist/app/src/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@trpc/server": "^11.10.0",
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.3.1",
+    "fastify": "^5.7.4",
+    "knex": "^3.1.0",
+    "mysql2": "^3.18.1",
+    "node-cron": "^4.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node-cron": "^3.0.11",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.5",
+    "globals": "^16.5.0",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript-eslint": "^8.48.0"
+  }
+}
