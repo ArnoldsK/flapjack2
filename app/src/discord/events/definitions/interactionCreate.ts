@@ -1,13 +1,11 @@
-import { type Client, Events, type Interaction } from "discord.js";
+import { Events, type Interaction } from "discord.js";
 
-import type { AppContext } from "@app/context";
 import { commands } from "@app/discord/commands";
+import { defineEvent } from "@app/discord/events/defineEvent";
 
-export const registerInteractionCreateEvent = (
-  client: Client,
-  ctx: AppContext,
-): void => {
-  client.on(Events.InteractionCreate, async (interaction: Interaction) => {
+export default defineEvent({
+  event: Events.InteractionCreate,
+  run: async (ctx, interaction: Interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     const command = commands.get(interaction.commandName);
@@ -35,5 +33,5 @@ export const registerInteractionCreateEvent = (
         });
       }
     }
-  });
-};
+  },
+});
