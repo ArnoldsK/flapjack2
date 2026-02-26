@@ -72,3 +72,15 @@ export async function deployCommands(
     `Discord guild commands deployed (${localPayload.length} command(s)).`,
   );
 }
+
+export async function removeGuildCommands(
+  env: Env,
+  guildId: string,
+): Promise<void> {
+  const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);
+  await rest.put(
+    Routes.applicationGuildCommands(env.DISCORD_CLIENT_ID, guildId),
+    { body: [] },
+  );
+  console.log("Removed all guild commands.");
+}

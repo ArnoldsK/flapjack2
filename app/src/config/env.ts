@@ -10,9 +10,7 @@ import { z } from "zod";
 const envSchema = z.object({
   DISCORD_TOKEN: z.string().min(1),
   DISCORD_CLIENT_ID: z.string().min(1),
-  NODE_ENV: z
-    .enum(["development", "test", "production"])
-    .default("development"),
+  NODE_ENV: z.enum(["development", "production"]).default("development"),
   API_PORT: z.coerce.number().int().positive().default(3000),
   DB_HOST: z.string().min(1).default("localhost"),
   DB_PORT: z.coerce.number().int().positive().default(3306),
