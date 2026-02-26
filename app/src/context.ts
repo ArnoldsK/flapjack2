@@ -1,4 +1,5 @@
 import type { Client } from "discord.js";
+
 import type { Env } from "@app/config/env";
 import type { Db } from "@app/db/knex";
 

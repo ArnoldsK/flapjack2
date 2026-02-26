@@ -1,10 +1,11 @@
 import {
-  SlashCommandBuilder,
   ChatInputCommandInteraction,
   PermissionFlagsBits,
+  SlashCommandBuilder,
 } from "discord.js";
+
 import type { AppContext } from "@app/context";
-import { runById, listJobIds } from "@app/jobs";
+import { listJobIds, runById } from "@app/jobs";
 
 export const data = new SlashCommandBuilder()
   .setName("job")

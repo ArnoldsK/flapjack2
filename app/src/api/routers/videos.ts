@@ -1,4 +1,4 @@
-import { router, publicProcedure } from "@app/api/trpc";
+import { publicProcedure, router } from "@app/api/trpc";
 import * as videosModule from "@app/modules/videos";
 
 export const videosRouter = router({

@@ -1,9 +1,9 @@
+import { startApiServer } from "@app/api/server";
 import { loadEnv } from "@app/config/env";
 import { createContext } from "@app/context";
-import { createDiscordClient, registerDiscordEvents } from "@app/discord";
 import { createDb } from "@app/db/knex";
 import { runMigrations } from "@app/db/migrate";
-import { startApiServer } from "@app/api/server";
+import { createDiscordClient, registerDiscordEvents } from "@app/discord";
 import { registerAll as registerJobs } from "@app/jobs";
 
 const main = async () => {

@@ -2,6 +2,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import js from "@eslint/js";
 import globals from "globals";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 import eslintConfigPrettier from "eslint-config-prettier";
@@ -13,6 +14,7 @@ export default defineConfig([
   {
     files: ["**/*.ts"],
     extends: [js.configs.recommended, tseslint.configs.recommended],
+    plugins: { "simple-import-sort": simpleImportSort },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.node,
@@ -26,6 +28,17 @@ export default defineConfig([
         "error",
         { argsIgnorePattern: "^_" },
       ],
+      "simple-import-sort/imports": [
+        "error",
+        {
+          groups: [
+            ["^node:", "^@?\\w"],
+            ["^@app/", "^@project-types/"],
+            ["^\\.\\./", "^\\./"],
+          ],
+        },
+      ],
+      "simple-import-sort/exports": "error",
     },
   },
   eslintConfigPrettier,

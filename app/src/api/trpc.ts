@@ -1,4 +1,5 @@
 import { initTRPC } from "@trpc/server";
+
 import type { AppContext } from "@app/context";
 
 export interface TrpcContext {

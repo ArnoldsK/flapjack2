@@ -1,4 +1,5 @@
 import knex, { type Knex } from "knex";
+
 import type { Env } from "@app/config/env";
 
 export type Db = Knex;

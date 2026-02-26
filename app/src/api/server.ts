@@ -1,9 +1,10 @@
-import Fastify from "fastify";
 import fastifyCors from "@fastify/cors";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import type { AppContext } from "@app/context";
+import Fastify from "fastify";
+
 import { appRouter } from "@app/api/router";
 import { createTrpcContext } from "@app/api/trpc";
+import type { AppContext } from "@app/context";
 
 export const startApiServer = async (ctx: AppContext): Promise<void> => {
   const server = Fastify({ logger: ctx.env.NODE_ENV !== "production" });

@@ -3,10 +3,10 @@ import type {
   SlashCommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
-import type { AppContext } from "@app/context";
 
-import * as ping from "@app/discord/commands/ping";
+import type { AppContext } from "@app/context";
 import * as job from "@app/discord/commands/job";
+import * as ping from "@app/discord/commands/ping";
 
 export interface SlashCommandModule {
   data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;

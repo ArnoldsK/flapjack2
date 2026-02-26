@@ -1,4 +1,4 @@
-import { router, publicProcedure } from "@app/api/trpc";
+import { publicProcedure, router } from "@app/api/trpc";
 import * as statsModule from "@app/modules/stats";
 
 export const statsRouter = router({

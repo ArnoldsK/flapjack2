@@ -1,4 +1,5 @@
 import type { Knex } from "knex";
+
 import type { StatsOverview } from "@project-types/stats";
 
 const TABLE_NAME = "stats";

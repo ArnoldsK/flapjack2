@@ -1,6 +1,7 @@
-import { type Client, type Interaction, Events } from "discord.js";
-import { commands } from "@app/discord/commands";
+import { type Client, Events, type Interaction } from "discord.js";
+
 import type { AppContext } from "@app/context";
+import { commands } from "@app/discord/commands";
 
 export const registerInteractionCreateEvent = (
   client: Client,

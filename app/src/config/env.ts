@@ -1,5 +1,5 @@
-import path from "path";
 import { config } from "dotenv";
+import path from "path";
 
 // Load .env from repo root first, then app/ (so app/.env overrides if present)
 config({ path: path.resolve(process.cwd(), "..", ".env") });

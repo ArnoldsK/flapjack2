@@ -1,4 +1,5 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+
 import type { AppContext } from "@app/context";
 
 export const data = new SlashCommandBuilder()

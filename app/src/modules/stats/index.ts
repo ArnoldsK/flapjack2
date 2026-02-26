@@ -3,7 +3,7 @@ import {
   getLatestStats as getLatestStatsFromDb,
   upsertStats as upsertStatsInDb,
 } from "@app/modules/stats/db";
-import { StatsOverviewSchema, type StatsOverview } from "@project-types/stats";
+import { type StatsOverview, StatsOverviewSchema } from "@project-types/stats";
 
 export const getOverview = async (ctx: AppContext): Promise<StatsOverview> => {
   const existing = await getLatestStatsFromDb(ctx.db);

@@ -1,7 +1,8 @@
 import { Client, GatewayIntentBits, Partials } from "discord.js";
+
 import type { AppContext } from "@app/context";
-import { registerReadyEvent } from "@app/discord/events/ready";
 import { registerInteractionCreateEvent } from "@app/discord/events/interactionCreate";
+import { registerReadyEvent } from "@app/discord/events/ready";
 
 export const createDiscordClient = (): Client =>
   new Client({
