@@ -1,14 +1,8 @@
 import cron from "node-cron";
 
 import type { AppContext } from "@app/context";
-import * as refreshStats from "@app/jobs/refreshStats";
-
-export interface JobDefinition {
-  id: string;
-  schedule: string;
-  description?: string;
-  run: (ctx: AppContext) => Promise<void>;
-}
+import type { JobDefinition } from "@app/jobs/defineJob";
+import refreshStats from "@app/jobs/refreshStats";
 
 const registry: JobDefinition[] = [refreshStats];
 
