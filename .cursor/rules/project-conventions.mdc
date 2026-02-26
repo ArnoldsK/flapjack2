@@ -7,6 +7,6 @@ alwaysApply: true
 
 - **Path aliases**: Use `@app/*`, `@project-types/*`, and `@web/*` for imports; avoid cross-package relative paths (e.g. prefer `@web/components/PageLayout` over `../../components/PageLayout` in web).
 - **App (Discord)**: Register events using the `Events` enum from `discord.js` (e.g. `Events.ClientReady`, `Events.InteractionCreate`), not string literals.
-- **App (Node)**: Run dev with tsconfig-paths and `tsconfig.dev.json`; `.env` is loaded from repo root first, then `app/` (so a root `.env` is used when running from `app/`).
+- **App (Node)**: Run dev with tsconfig-paths and `tsconfig.dev.json`; `.env` is loaded from repo root only (resolved from `process.cwd()` or one level up when running from `app/`).
 - **Web (React)**: Type components with `FC` (or `FC<Props>`). Use **Tailwind** for styling; no raw CSS files for layout/theme. Shared layout and header nav live in `web/src/components/` (e.g. `PageLayout`, `HeaderNav`).
 - **Style**: Arrow functions for all source; Prettier and ESLint (with simple-import-sort and eslint-config-prettier) are configured at repo root—run format/lint when changing code.

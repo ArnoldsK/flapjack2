@@ -8,7 +8,7 @@ Monorepo: Discord bot (**app**) + React frontend (**web**), with shared types an
 pnpm install
 ```
 
-- **App** needs `.env` in `app/` with at least: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, and DB vars (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`). See `app/src/config/env.ts` for the full schema (Zod-validated).
+- **App** needs `.env` at repo root with at least: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, and DB vars (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`). See `app/src/config/env.ts` for the full schema (Zod-validated).
 - **Web** can use `VITE_API_BASE_URL` (default `http://localhost:3000`) to point at the app API.
 
 ## Development

@@ -1,9 +1,11 @@
 import { config } from "dotenv";
 import path from "path";
 
-// Load .env from repo root first, then app/ (so app/.env overrides if present)
-config({ path: path.resolve(process.cwd(), "..", ".env") });
-config({ path: path.resolve(process.cwd(), ".env") });
+const rootDir =
+  path.basename(process.cwd()) === "app"
+    ? path.resolve(process.cwd(), "..")
+    : process.cwd();
+config({ path: path.resolve(rootDir, ".env") });
 
 import { z } from "zod";
 
