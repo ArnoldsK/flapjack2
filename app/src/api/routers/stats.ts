@@ -1,8 +1,8 @@
 import { publicProcedure, router } from "@app/api/trpc";
-import * as statsModule from "@app/modules/stats";
+import * as Stats from "@app/modules/stats";
 
 export const statsRouter = router({
   getOverview: publicProcedure.query(async (opts) => {
-    return statsModule.getOverview(opts.ctx.app);
+    return Stats.getOverview(opts.ctx.app);
   }),
 });

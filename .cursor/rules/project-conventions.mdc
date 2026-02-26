@@ -6,6 +6,7 @@ alwaysApply: true
 # Project conventions
 
 - **Path aliases**: Use `@app/*`, `@project-types/*`, and `@web/*` for imports; avoid cross-package relative paths (e.g. prefer `@web/components/PageLayout` over `../../components/PageLayout` in web).
+- **Module namespace imports**: When importing a module as a namespace (`import * as X from "..."`), use PascalCase for the alias (e.g. `import * as Stats from "@app/modules/stats"`, not `statsModule`).
 - **App (Discord)**: Register events using the `Events` enum from `discord.js` (e.g. `Events.ClientReady`, `Events.InteractionCreate`), not string literals. Slash commands have a `version` field; deploy is version-aware (see `deployCommands.ts`).
 - **App (Node)**: Run dev with tsconfig-paths and `tsconfig.dev.json`; `.env` is loaded from repo root only (resolved from `process.cwd()` or one level up when running from `app/`). In app, `pnpm run lint` runs ESLint and typecheck—missing modules or type errors fail lint.
 - **App config**: Static config (guild ID, owner user ID, channel IDs) lives in `@app/config/static`; import it explicitly where needed. Env (`@app/config/env`) is for secrets and runtime only.
