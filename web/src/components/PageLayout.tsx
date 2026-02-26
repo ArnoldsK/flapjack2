@@ -11,7 +11,7 @@ export const PageLayout: FC = () => (
           to="/"
           className="text-lg font-semibold text-white hover:text-zinc-200"
         >
-          Flapjack Bot
+          Pepsi Dog
         </Link>
         <HeaderNav />
       </div>

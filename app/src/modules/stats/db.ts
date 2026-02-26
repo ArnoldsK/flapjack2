@@ -16,11 +16,12 @@ export const getLatestStats = async (
   const row = await db<StatsRow>(TABLE_NAME)
     .orderBy("last_updated", "desc")
     .first();
+
   if (!row) return null;
 
   return {
-    guildCount: Number(row.guild_count),
-    userCount: Number(row.user_count),
+    guildCount: row.guild_count,
+    userCount: row.user_count,
     lastUpdated: row.last_updated.toISOString(),
   };
 };
