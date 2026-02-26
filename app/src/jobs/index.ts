@@ -2,7 +2,7 @@ import cron from "node-cron";
 
 import type { AppContext } from "@app/context";
 import type { JobDefinition } from "@app/jobs/defineJob";
-import refreshStats from "@app/jobs/refreshStats";
+import refreshStats from "@app/jobs/definitions/refreshStats";
 
 const registry: JobDefinition[] = [refreshStats];
 
