@@ -5,6 +5,7 @@ alwaysApply: true
 
 # Project conventions
 
+- **No optional properties**: Do not use `x?: y` (optional properties). They invite dead code. When a value can be absent, use `x: y | undefined` and always define the property (e.g. `x: undefined` or `x: value`). For flags that have a default, use an explicit boolean and set it everywhere (e.g. `once: boolean`, `productionOnly: boolean`).
 - **Path aliases**: Use `@app/*`, `@project-types/*`, and `@web/*` for imports; avoid cross-package relative paths (e.g. prefer `@web/components/PageLayout` over `../../components/PageLayout` in web).
 - **Module namespace imports**: When importing a module as a namespace (`import * as X from "..."`), use PascalCase for the alias (e.g. `import * as Stats from "@app/modules/stats"`, not `statsModule`).
 - **App (Discord)**: Register events using the `Events` enum from `discord.js` (e.g. `Events.ClientReady`, `Events.InteractionCreate`), not string literals. Use the event registry (defineEvent + definitions); set `productionOnly: true` on handlers that must not run in development (e.g. message deletes). Slash commands have a `version` field; deploy is version-aware (see `deployCommands.ts`).

@@ -5,6 +5,8 @@ import { defineEvent } from "@app/discord/events/defineEvent";
 
 export default defineEvent({
   event: Events.InteractionCreate,
+  once: false,
+  productionOnly: false,
   run: async (ctx, interaction: Interaction) => {
     if (!interaction.isChatInputCommand()) return;
 

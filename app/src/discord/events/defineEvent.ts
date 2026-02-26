@@ -7,9 +7,9 @@ export interface EventDefinition<
 > {
   event: E;
   run: (ctx: AppContext, ...args: ClientEvents[E]) => Promise<void>;
-  once?: boolean;
+  once: boolean;
   /** If true, handler runs only when NODE_ENV is "production" (e.g. to avoid dev bot acting on message deletes). */
-  productionOnly?: boolean;
+  productionOnly: boolean;
 }
 
 export const defineEvent = <E extends keyof ClientEvents>(
