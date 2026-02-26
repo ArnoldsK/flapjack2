@@ -1,20 +1,6 @@
-import type {
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-  SlashCommandSubcommandsOnlyBuilder,
-} from "discord.js";
-
-import type { AppContext } from "@app/context";
-import * as job from "@app/discord/commands/job";
-import * as ping from "@app/discord/commands/ping";
-
-export interface SlashCommandModule {
-  data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
-  execute: (
-    ctx: AppContext,
-    interaction: ChatInputCommandInteraction,
-  ) => Promise<void>;
-}
+import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
+import job from "@app/discord/commands/job";
+import ping from "@app/discord/commands/ping";
 
 const commandList: SlashCommandModule[] = [ping, job];
 

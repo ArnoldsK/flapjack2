@@ -31,7 +31,6 @@ export const loadEnv = (): Env => {
       "Invalid environment variables",
       parsed.error.flatten().fieldErrors,
     );
-    // In a real app you might throw here; exiting is fine for now.
     process.exit(1);
   }
   return parsed.data;
