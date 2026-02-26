@@ -13,3 +13,4 @@ alwaysApply: true
 - **App config**: Static config (guild ID, owner user ID, channel IDs) lives in `@app/config/static`; import it explicitly where needed. Env (`@app/config/env`) is for secrets and runtime only.
 - **Web (React)**: Type components with `FC` (or `FC<Props>`). Use **Tailwind** for styling; no raw CSS files for layout/theme. Shared layout and header nav live in `web/src/components/` (e.g. `PageLayout`, `HeaderNav`).
 - **Style**: Arrow functions for all source; Prettier and ESLint (with simple-import-sort and eslint-config-prettier) are configured at repo root—run format/lint when changing code.
+- **Unused variables**: No unused variables (enforced by `@typescript-eslint/no-unused-vars`). For intentionally unused function arguments, prefix with `_` (e.g. `_ctx`) so the rule ignores them.

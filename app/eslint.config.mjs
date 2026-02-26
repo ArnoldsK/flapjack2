@@ -26,7 +26,7 @@ export default defineConfig([
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_" },
+        { args: "all", argsIgnorePattern: "^_" },
       ],
       "simple-import-sort/imports": [
         "error",
@@ -39,6 +39,14 @@ export default defineConfig([
         },
       ],
       "simple-import-sort/exports": "error",
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector": "TSPropertySignature[optional=true]",
+          "message":
+            "Optional properties (x?: y) are disallowed. Use 'x: y | undefined' and always define the property.",
+        },
+      ],
     },
   },
   eslintConfigPrettier,

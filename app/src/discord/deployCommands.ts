@@ -6,7 +6,9 @@ import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
 
 const VERSION_SUFFIX_REGEX = / · v(\d+)$/;
 
-function parseVersionFromDescription(description: string | null): number {
+function parseVersionFromDescription(
+  description: string | null | undefined,
+): number {
   if (!description) return 0;
   const match = description.match(VERSION_SUFFIX_REGEX);
   return match ? parseInt(match[1], 10) : 0;
@@ -37,7 +39,7 @@ export async function deployCommands(
   type RemoteCommand = {
     id: string;
     name: string;
-    description?: string | null;
+    description: string | null | undefined;
   };
   const remotes = (await rest.get(
     Routes.applicationGuildCommands(clientId, guildId),
@@ -48,7 +50,7 @@ export async function deployCommands(
   for (const cmd of commands.values()) {
     const remote = remotes.find((r) => r.name === cmd.data.name);
     const remoteVersion = remote
-      ? parseVersionFromDescription(remote.description ?? null)
+      ? parseVersionFromDescription(remote.description)
       : 0;
     if (remote && remoteVersion > cmd.version) {
       throw new Error(
