@@ -1,9 +1,12 @@
 import { startApiServer } from "@app/api/server";
 import { loadEnv } from "@app/config/env";
+import { staticConfig } from "@app/config/static";
 import { createContext } from "@app/context";
 import { createDb } from "@app/db/knex";
 import { runMigrations } from "@app/db/migrate";
 import { createDiscordClient, registerDiscordEvents } from "@app/discord";
+import { commands } from "@app/discord/commands";
+import { deployCommands } from "@app/discord/deployCommands";
 import { registerAll as registerJobs } from "@app/jobs";
 
 const main = async () => {
@@ -17,6 +20,8 @@ const main = async () => {
   await startApiServer(ctx);
   registerJobs(ctx);
   registerDiscordEvents(client, ctx);
+
+  await deployCommands(env, staticConfig.guildId, commands);
 
   try {
     await client.login(env.DISCORD_TOKEN);

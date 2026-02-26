@@ -4,6 +4,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
+import { staticConfig } from "@app/config/static";
 import type { AppContext } from "@app/context";
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import { listJobIds, runById } from "@app/jobs";
@@ -25,6 +26,7 @@ export default defineCommand({
             .addChoices(...listJobIds().map((id) => ({ name: id, value: id }))),
         ),
     ),
+  version: 1,
   execute: async (
     ctx: AppContext,
     interaction: ChatInputCommandInteraction,
@@ -32,7 +34,7 @@ export default defineCommand({
     const sub = interaction.options.getSubcommand();
     if (sub !== "run") return;
 
-    const ownerId = ctx.env.DISCORD_OWNER_ID;
+    const ownerId = staticConfig.ownerUserId;
     const isOwner = ownerId && interaction.user.id === ownerId;
     const isAdmin =
       interaction.memberPermissions?.has(PermissionFlagsBits.Administrator) ??

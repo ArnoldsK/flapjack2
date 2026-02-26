@@ -8,6 +8,7 @@ import type { AppContext } from "@app/context";
 
 export interface SlashCommandModule {
   data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
+  version: number;
   execute: (
     ctx: AppContext,
     interaction: ChatInputCommandInteraction,

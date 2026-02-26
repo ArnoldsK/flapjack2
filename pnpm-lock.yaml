@@ -39,12 +39,18 @@ importers:
 
   app:
     dependencies:
+      '@discordjs/rest':
+        specifier: ^2.6.0
+        version: 2.6.0
       '@fastify/cors':
         specifier: ^11.2.0
         version: 11.2.0
       '@trpc/server':
         specifier: ^11.10.0
         version: 11.10.0(typescript@5.9.3)
+      discord-api-types:
+        specifier: ^0.38.33
+        version: 0.38.40
       discord.js:
         specifier: ^14.25.1
         version: 14.25.1
