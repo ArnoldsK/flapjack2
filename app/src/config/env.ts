@@ -1,3 +1,12 @@
+import { config } from "dotenv";
+import path from "path";
+
+const rootDir =
+  path.basename(process.cwd()) === "app"
+    ? path.resolve(process.cwd(), "..")
+    : process.cwd();
+config({ path: path.resolve(rootDir, ".env") });
+
 import { z } from "zod";
 
 const envSchema = z.object({
