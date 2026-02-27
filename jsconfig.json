@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "checkJs": true,
+    "baseUrl": "."
+  },
+  "include": ["db/**/*.js"]
+}

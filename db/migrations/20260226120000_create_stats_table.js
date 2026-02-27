@@ -1,6 +1,5 @@
-import type { Knex } from "knex";
-
-export const up = async (knex: Knex): Promise<void> => {
+/** @type {import("knex").Knex.Migration["up"]} */
+exports.up = async (knex) => {
   const exists = await knex.schema.hasTable("stats");
   if (exists) return;
 
@@ -12,6 +11,7 @@ export const up = async (knex: Knex): Promise<void> => {
   });
 };
 
-export const down = async (knex: Knex): Promise<void> => {
+/** @type {import("knex").Knex.Migration["down"]} */
+exports.down = async (knex) => {
   await knex.schema.dropTableIfExists("stats");
 };

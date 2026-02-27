@@ -1,8 +1,15 @@
 import knex, { type Knex } from "knex";
+import path from "path";
 
 import type { Env } from "@app/config/env";
 
 export type Db = Knex;
+
+const appRoot = path.join(
+  __dirname,
+  __dirname.includes("dist") ? "../../../../.." : "../..",
+);
+const migrationsDir = path.join(appRoot, "..", "db", "migrations");
 
 export const createDb = (env: Env): Db =>
   knex({
@@ -20,7 +27,7 @@ export const createDb = (env: Env): Db =>
     },
     migrations: {
       tableName: "knex_migrations",
-      directory: `${__dirname}/migrations`,
-      loadExtensions: __dirname.includes("dist") ? [".js"] : [".ts", ".js"],
+      directory: migrationsDir,
+      loadExtensions: [".js"],
     },
   });

@@ -24,6 +24,9 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
+      knex:
+        specifier: ^3.1.0
+        version: 3.1.0(mysql2@3.18.1(@types/node@25.3.1))
       lint-staged:
         specifier: ^15.4.3
         version: 15.5.2
