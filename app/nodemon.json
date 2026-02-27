@@ -1,5 +1,8 @@
 {
   "watch": ["src"],
-  "exec": "ts-node -r tsconfig-paths/register -P tsconfig.dev.json src/index.ts",
-  "ext": "ts"
+  "exec": "node --env-file=../.env -r ts-node/register -r tsconfig-paths/register src/index.ts",
+  "ext": "ts",
+  "env": {
+    "TS_NODE_PROJECT": "tsconfig.dev.json"
+  }
 }
