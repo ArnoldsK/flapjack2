@@ -17,6 +17,7 @@
   },
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only -P tsconfig.dev.json src/index.ts",
+    "remove-commands": "ts-node -r tsconfig-paths/register -P tsconfig.dev.json src/removeCommands.ts",
     "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node dist/app/src/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -40,6 +41,7 @@
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.5",
     "globals": "^16.5.0",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript-eslint": "^8.48.0"
