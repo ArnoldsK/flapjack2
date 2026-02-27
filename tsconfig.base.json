@@ -11,7 +11,7 @@
     "baseUrl": ".",
     "paths": {
       "@app/*": ["app/src/*"],
-      "@project-types/*": ["types/*"],
+      "@shared/*": ["shared/*"],
       "@web/*": ["web/src/*"]
     }
   }

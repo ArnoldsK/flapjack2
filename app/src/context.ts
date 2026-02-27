@@ -1,12 +1,14 @@
-import type { Client } from "discord.js";
+import type { Client, Guild } from "discord.js";
 
 import type { Env } from "@app/config/env";
+import { staticConfig } from "@app/config/static";
 import type { Db } from "@app/db/knex";
 
 export interface AppContext {
   env: Env;
   client: Client;
   db: Db;
+  guild: () => Guild;
 }
 
 export const createContext = (
@@ -17,4 +19,5 @@ export const createContext = (
   env,
   client,
   db,
+  guild: () => client.guilds.cache.get(staticConfig.guildId)!,
 });

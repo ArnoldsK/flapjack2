@@ -33,7 +33,7 @@ export default defineConfig([
         {
           groups: [
             ["^node:", "^@?\\w"],
-            ["^@app/", "^@project-types/"],
+            ["^@app/", "^@shared/"],
             ["^\\.\\./", "^\\./"],
           ],
         },

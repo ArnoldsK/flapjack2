@@ -1,6 +1,6 @@
 import type { Knex } from "knex";
 
-import type { StatsOverview } from "@project-types/stats";
+import type { StatsOverview } from "@shared/types/stats";
 
 const TABLE_NAME = "stats";
 

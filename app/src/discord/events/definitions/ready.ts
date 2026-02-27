@@ -6,7 +6,9 @@ export default defineEvent({
   event: Events.ClientReady,
   once: true,
   productionOnly: false,
-  run: async (_ctx, client) => {
-    console.log(`Logged in as ${client.user?.tag ?? "Unknown user"}`);
+  run: async (ctx, client) => {
+    console.log(`Logged in as ${client.user?.displayName ?? "Unknown user"}`);
+
+    await ctx.guild().members.fetch();
   },
 });

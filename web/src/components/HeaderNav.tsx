@@ -4,7 +4,6 @@ import { NavLink } from "react-router-dom";
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/stats", label: "Stats" },
-  { to: "/videos", label: "Videos" },
 ] as const;
 
 export const HeaderNav: FC = () => (

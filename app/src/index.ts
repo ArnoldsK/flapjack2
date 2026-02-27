@@ -38,6 +38,12 @@ const main = async () => {
   process.on("SIGTERM", () => {
     void shutdown();
   });
+  // IPC shutdown when run as child (e.g. parent sends "shutdown")
+  if (typeof process.send === "function") {
+    process.on("message", (msg) => {
+      if (msg === "shutdown") void shutdown();
+    });
+  }
 
   const client = createDiscordClient();
   const ctx = createContext(env, client, db);

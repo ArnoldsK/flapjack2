@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()] as PluginOption[],
   resolve: {
     alias: {
-      "@project-types": path.resolve(__dirname, "../types"),
+      "@shared": path.resolve(__dirname, "../shared"),
       "@web": path.resolve(__dirname, "src"),
     },
   },
