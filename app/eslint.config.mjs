@@ -28,6 +28,13 @@ export default defineConfig([
         "error",
         { args: "all", argsIgnorePattern: "^_" },
       ],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          prefer: "type-imports",
+          disallowTypeAnnotations: false,
+        },
+      ],
       "simple-import-sort/imports": [
         "error",
         {

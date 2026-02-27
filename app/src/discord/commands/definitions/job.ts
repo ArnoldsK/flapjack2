@@ -1,8 +1,5 @@
-import {
-  ChatInputCommandInteraction,
-  PermissionFlagsBits,
-  SlashCommandBuilder,
-} from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 
 import { staticConfig } from "@app/config/static";
 import type { AppContext } from "@app/context";

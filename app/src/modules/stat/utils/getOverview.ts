@@ -1,12 +1,9 @@
-import { AppContext } from "@app/context";
-import {
-  getLatestStats as getLatestStatsFromDb,
-  upsertStats as upsertStatsInDb,
-} from "@app/modules/stats/db";
+import type { AppContext } from "@app/context";
+import * as Stat from "@app/modules/stat";
 import { type StatsOverview, StatsOverviewSchema } from "@shared/types/stats";
 
 export const getOverview = async (ctx: AppContext): Promise<StatsOverview> => {
-  const existing = await getLatestStatsFromDb(ctx.db);
+  const existing = await Stat.getLatestStats(ctx);
   if (existing) {
     return StatsOverviewSchema.parse(existing);
   }
@@ -17,7 +14,7 @@ export const getOverview = async (ctx: AppContext): Promise<StatsOverview> => {
     lastUpdated: new Date().toISOString(),
   };
 
-  await upsertStatsInDb(ctx.db, {
+  await Stat.upsert(ctx, {
     guildCount: fallback.guildCount,
     userCount: fallback.userCount,
   });

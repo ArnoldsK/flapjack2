@@ -7,7 +7,7 @@ alwaysApply: true
 
 - **No optional properties**: Do not use `x?: y` (optional properties). They invite dead code. When a value can be absent, use `x: y | undefined` and always define the property (e.g. `x: undefined` or `x: value`). For flags that have a default, use an explicit boolean and set it everywhere (e.g. `once: boolean`, `productionOnly: boolean`).
 - **Path aliases**: Use `@app/*`, `@project-types/*`, and `@web/*` for imports; avoid cross-package relative paths (e.g. prefer `@web/components/PageLayout` over `../../components/PageLayout` in web).
-- **Module namespace imports**: When importing a module as a namespace (`import * as X from "..."`), use PascalCase for the alias (e.g. `import * as Stats from "@app/modules/stats"`, not `statsModule`).
+- **Module namespace imports**: When importing a module as a namespace (`import * as X from "..."`), use PascalCase for the alias and prefer singular names that describe a single conceptual module instance (e.g. `import * as Stat from "@app/modules/stat"`, not `statsModule` or `Stats`).
 - **App (Discord)**: Register events using the `Events` enum from `discord.js` (e.g. `Events.ClientReady`, `Events.InteractionCreate`), not string literals. Use the event registry (defineEvent + definitions); set `productionOnly: true` on handlers that must not run in development (e.g. message deletes). Slash commands have a `version` field; deploy is version-aware (see `deployCommands.ts`).
 - **App (Node)**: Run dev with tsconfig-paths and `tsconfig.dev.json`; `.env` is loaded from repo root only (resolved from `process.cwd()` or one level up when running from `app/`). In app, `pnpm run lint` runs ESLint and typecheck—missing modules or type errors fail lint.
 - **App config**: Static config (guild ID, owner user ID, channel IDs) lives in `@app/config/static`; import it explicitly where needed. Env (`@app/config/env`) is for secrets and runtime only.
@@ -15,3 +15,10 @@ alwaysApply: true
 - **Returns**: Always add a blank line immediately before a `return` statement (except when the return is the only statement in a block, e.g. a single-line arrow function).
 - **Style**: Prefer arrow functions for all source (standalone helpers, callbacks, and methods where appropriate). Use `const fn = () => { ... }` or `const fn = (x) => ...` instead of `function fn() { ... }`. Prettier and ESLint (with simple-import-sort and eslint-config-prettier) are configured at repo root—run format/lint when changing code.
 - **Unused variables**: No unused variables (enforced by `@typescript-eslint/no-unused-vars`). For intentionally unused function arguments, prefix with `_` (e.g. `_ctx`) so the rule ignores them.
+- **Type-only imports**: When an import is used only as a type, use the `import type` modifier; the ESLint config (`@typescript-eslint/consistent-type-imports`) enforces this.
+- **App modules layout**: Each app module lives under `app/src/modules/<name>` and follows this structure:
+  - `index.ts` re-exports `export * as db from "./db";`, `export * as utils from "./utils";`, and `export * from "./actions";`.
+  - `db.ts` contains table metadata only (e.g. `export const TableName`, `export interface Table`) and must not depend on `AppContext` or perform queries.
+  - `actions/` contains basic data actions such as `select.ts`, `upsert.ts`, etc., with `actions/index.ts` re-exporting them.
+  - `utils/` contains higher-level helpers that compose actions (e.g. `utils/getOverview.ts`), with `utils/index.ts` re-exporting them and the module root exposing `utils` as a namespace.
+  - Import modules per-module (e.g. `import * as Stat from "@app/modules/stat"`); do not use or add a root `@app/modules` barrel, especially from within modules, to avoid circular dependencies.
