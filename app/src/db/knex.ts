@@ -7,7 +7,7 @@ export type Db = Knex;
 
 const appRoot = path.join(
   __dirname,
-  __dirname.includes("dist") ? "../../../../.." : "../..",
+  __dirname.includes("dist") ? "../../../.." : "../..",
 );
 const migrationsDir = path.join(appRoot, "..", "db", "migrations");
 
