@@ -38,9 +38,15 @@ const main = async () => {
     if (shuttingDown) return;
     shuttingDown = true;
     console.log("Shutting down...");
-    await removeGuildCommands(env, staticConfig.guildId);
-    client.destroy();
-    await db.destroy();
+
+    await Promise.all([
+      env.NODE_ENV === "development"
+        ? removeGuildCommands(env, staticConfig.guildId)
+        : Promise.resolve(),
+      client.destroy(),
+      db.destroy(),
+    ]);
+
     process.exit(0);
   };
   process.on("SIGINT", () => void doShutdown());
