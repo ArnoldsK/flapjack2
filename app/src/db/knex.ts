@@ -21,6 +21,6 @@ export const createDb = (env: Env): Db =>
     migrations: {
       tableName: "knex_migrations",
       directory: `${__dirname}/migrations`,
-      loadExtensions: [".js"],
+      loadExtensions: __dirname.includes("dist") ? [".js"] : [".ts", ".js"],
     },
   });
