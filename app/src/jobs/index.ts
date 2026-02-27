@@ -15,9 +15,7 @@ export const runById = async (
     throw new Error(`[job:${jobId}] Unknown job`);
   }
   try {
-    console.log(`[job:${jobId}] Running (${job.schedule})`);
     await job.run(ctx);
-    console.log(`[job:${jobId}] Completed`);
   } catch (error) {
     console.error(`[job:${jobId}] Failed:`, error);
   }
