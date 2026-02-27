@@ -33,7 +33,7 @@ pnpm build
 
 Builds **app** (output in `app/dist/`, **gitignored**) and **web** (output in `web/dist/`, **gitignored**).
 
-- **Development** already runs **pure TypeScript** (no build): `pnpm dev` uses `ts-node-dev` for the app and Vite for the web, so you don’t need to run a build step while developing.
+- **Development** already runs **pure TypeScript** (no build): `pnpm dev` uses nodemon + ts-node for the app and Vite for the web, so you don’t need to run a build step while developing.
 - **Production**: A build step is recommended so Node runs compiled JS (faster and more robust). If you prefer not to build the app in prod, you can run it with `tsx src/index.ts` from the `app/` directory (path aliases require a loader like `tsconfig-paths` or running from a context that respects `tsconfig` paths).
 
 ## Production (PM2)

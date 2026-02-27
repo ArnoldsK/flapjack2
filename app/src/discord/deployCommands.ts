@@ -6,30 +6,30 @@ import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
 
 const VERSION_SUFFIX_REGEX = / · v(\d+)$/;
 
-function parseVersionFromDescription(
+const parseVersionFromDescription = (
   description: string | null | undefined,
-): number {
+): number => {
   if (!description) return 0;
   const match = description.match(VERSION_SUFFIX_REGEX);
-  return match ? parseInt(match[1], 10) : 0;
-}
+  return match ? Number.parseInt(match[1], 10) : 0;
+};
 
-function buildCommandPayload(
+const buildCommandPayload = (
   commands: Map<string, SlashCommandModule>,
-): Record<string, unknown>[] {
+): Record<string, unknown>[] => {
   return Array.from(commands.values()).map((cmd) => {
     const json = cmd.data.toJSON() as unknown as Record<string, unknown>;
     const desc = (json.description as string) ?? "";
     json.description = `${desc} · v${cmd.version}`;
     return json;
   });
-}
+};
 
-export async function deployCommands(
+export const deployCommands = async (
   env: Env,
   guildId: string,
   commands: Map<string, SlashCommandModule>,
-): Promise<void> {
+): Promise<void> => {
   const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);
   const clientId = env.DISCORD_CLIENT_ID;
 
@@ -73,16 +73,16 @@ export async function deployCommands(
   console.log(
     `Discord guild commands deployed (${localPayload.length} command(s)).`,
   );
-}
+};
 
-export async function removeGuildCommands(
+export const removeGuildCommands = async (
   env: Env,
   guildId: string,
-): Promise<void> {
+): Promise<void> => {
   const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);
   await rest.put(
     Routes.applicationGuildCommands(env.DISCORD_CLIENT_ID, guildId),
     { body: [] },
   );
   console.log("Removed all guild commands.");
-}
+};

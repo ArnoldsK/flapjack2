@@ -6,7 +6,10 @@ import { createDb } from "@app/db/knex";
 import { runMigrations } from "@app/db/migrate";
 import { createDiscordClient, registerDiscordEvents } from "@app/discord";
 import { commands } from "@app/discord/commands";
-import { deployCommands } from "@app/discord/deployCommands";
+import {
+  deployCommands,
+  removeGuildCommands,
+} from "@app/discord/deployCommands";
 import { registerAll as registerJobs } from "@app/jobs";
 
 const main = async () => {
@@ -29,6 +32,19 @@ const main = async () => {
     console.error("Failed to login to Discord", error);
     process.exit(1);
   }
+
+  let shuttingDown = false;
+  const doShutdown = async () => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log("Shutting down...");
+    await removeGuildCommands(env, staticConfig.guildId);
+    client.destroy();
+    await db.destroy();
+    process.exit(0);
+  };
+  process.on("SIGINT", () => void doShutdown());
+  process.on("SIGTERM", () => void doShutdown());
 };
 
 void main();

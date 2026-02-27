@@ -16,8 +16,7 @@
     }
   },
   "scripts": {
-    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only -P tsconfig.dev.json src/index.ts",
-    "remove-commands": "ts-node -r tsconfig-paths/register -P tsconfig.dev.json src/removeCommands.ts",
+    "dev": "nodemon",
     "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node dist/app/src/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -36,13 +35,13 @@
     "node-cron": "^4.2.1"
   },
   "devDependencies": {
+    "nodemon": "^3.1.9",
     "@eslint/js": "^9.39.1",
     "@types/node-cron": "^3.0.11",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.5",
     "globals": "^16.5.0",
     "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript-eslint": "^8.48.0"
   }
