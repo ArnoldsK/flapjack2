@@ -105,6 +105,30 @@ const VideoWithHoverPlay: FC<{
   );
 };
 
+const RecapAvatar: FC<{
+  member: RecapMessage["member"];
+  avatarUrl: string | null | undefined;
+}> = ({ member, avatarUrl }) => {
+  const [imgFailed, setImgFailed] = useState(false);
+  const showImg = !!avatarUrl && !imgFailed;
+  const initial = (member.displayName || member.username).slice(0, 1);
+
+  return (
+    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-zinc-700/90 text-sm font-medium text-white">
+      {showImg && avatarUrl ? (
+        <img
+          src={avatarUrl}
+          alt=""
+          className="h-full w-full object-cover"
+          onError={() => setImgFailed(true)}
+        />
+      ) : (
+        initial
+      )}
+    </div>
+  );
+};
+
 const getMessageUrl = (msg: RecapMessage) => {
   const path = `${msg.guild.id}/${msg.channel.id}/${msg.id}`;
 
@@ -118,7 +142,8 @@ const RecapMessageRow: FC<{
   message: RecapMessage;
   unmuteIntentReceived: boolean;
   onIntentReceived: () => void;
-}> = ({ message, unmuteIntentReceived, onIntentReceived }) => {
+  avatars: Record<string, string | null> | undefined;
+}> = ({ message, unmuteIntentReceived, onIntentReceived, avatars }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const { https, intent } = useMemo(() => getMessageUrl(message), [message]);
@@ -175,9 +200,10 @@ const RecapMessageRow: FC<{
       onKeyDown={onRowKeyDown}
       className="flex min-h-[52px] cursor-pointer gap-4 rounded-lg px-3 py-3 hover:bg-zinc-800/70"
     >
-      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-zinc-700/90 text-sm font-medium text-white">
-        {(message.member.displayName || message.member.username).slice(0, 1)}
-      </div>
+      <RecapAvatar
+        member={message.member}
+        avatarUrl={avatars?.[message.member.id]}
+      />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2 text-sm">
           <span className="font-semibold text-white">
@@ -360,6 +386,7 @@ export const RecapPage: FC = () => {
                     message={msg}
                     unmuteIntentReceived={unmuteIntentReceived}
                     onIntentReceived={onIntentReceived}
+                    avatars={data.avatars}
                   />
                 ))}
                 {moreMessages.length > 0 && (
@@ -371,6 +398,7 @@ export const RecapPage: FC = () => {
                           message={msg}
                           unmuteIntentReceived={unmuteIntentReceived}
                           onIntentReceived={onIntentReceived}
+                          avatars={data.avatars}
                         />
                       ))
                     ) : (

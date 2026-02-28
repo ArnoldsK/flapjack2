@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prebuild": "pnpm --filter app build",
+    "predev": "pnpm --filter app build",
     "dev": "vite",
     "build": "rimraf dist && tsc -b && vite build",
     "lint": "eslint .",
