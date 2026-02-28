@@ -10,7 +10,11 @@ export default defineEvent({
   once: true,
   productionOnly: false,
   run: async (ctx, client) => {
-    console.log(`Logged in as ${client.user?.displayName ?? "Unknown user"}`);
+    const guilds = client.guilds.cache.map((g) => g.name);
+
+    console.log(
+      `Logged in as ${client.user?.displayName ?? "Unknown user"} in ${guilds.join(", ")}`,
+    );
 
     if (ctx.env.NODE_ENV === "production") {
       // Prefetch all members to avoid rate limiting
