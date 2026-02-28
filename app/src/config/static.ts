@@ -6,6 +6,7 @@ export const staticConfig = {
     upperClass: "868434446502723625",
     poe: "701811325042688070",
     runescape: "717772755508002816",
+    casino: "621834853696143360",
   },
   roles: {
     activeMember: "669608043713003521",

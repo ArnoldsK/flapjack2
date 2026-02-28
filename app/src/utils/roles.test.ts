@@ -123,6 +123,71 @@ describe("getOrCreateRole", () => {
         name: "NewRole",
         position: 5,
         permissions: [],
+        colors: undefined,
+      }),
+    );
+  });
+
+  it("calls create with colors.primaryColor normalized from 0 to 0x000001 (Discord NIL)", async () => {
+    const clientRole = createMockRole({ managed: true, position: 5 });
+    const createdRole = createMockRole({ name: "DarkRole", id: "dark-id" });
+    const createMock = jest.fn().mockResolvedValue(createdRole);
+    const guild = {
+      members: {
+        me: {
+          roles: {
+            cache: {
+              find: (pred: (r: { managed: boolean }) => boolean) =>
+                pred(clientRole) ? clientRole : undefined,
+            },
+          },
+        },
+      },
+      roles: {
+        cache: { find: () => undefined },
+        create: createMock,
+      },
+    };
+    await getOrCreateRole(guild as never, {
+      name: "DarkRole",
+      colors: { primaryColor: 0 },
+    });
+    expect(createMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "DarkRole",
+        colors: { primaryColor: 0x000001 },
+      }),
+    );
+  });
+
+  it("calls create with colors passed through when primaryColor is non-zero", async () => {
+    const clientRole = createMockRole({ managed: true, position: 5 });
+    const createdRole = createMockRole({ name: "RedRole", id: "red-id" });
+    const createMock = jest.fn().mockResolvedValue(createdRole);
+    const guild = {
+      members: {
+        me: {
+          roles: {
+            cache: {
+              find: (pred: (r: { managed: boolean }) => boolean) =>
+                pred(clientRole) ? clientRole : undefined,
+            },
+          },
+        },
+      },
+      roles: {
+        cache: { find: () => undefined },
+        create: createMock,
+      },
+    };
+    await getOrCreateRole(guild as never, {
+      name: "RedRole",
+      colors: { primaryColor: 0xff0000 },
+    });
+    expect(createMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "RedRole",
+        colors: { primaryColor: 0xff0000 },
       }),
     );
   });

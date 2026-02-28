@@ -12,3 +12,9 @@ export const getByUserId = async (
 
   return row ?? null;
 };
+
+export const getAll = async (ctx: AppContext): Promise<Credits.db.Table[]> => {
+  const rows = await ctx.db<Credits.db.Table>(Credits.db.TableName).select("*");
+
+  return rows;
+};
