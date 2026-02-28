@@ -17,6 +17,10 @@ export const startApiServer = async (ctx: AppContext): Promise<void> => {
     },
   });
 
+  server.get("/ping", async (_request, reply) => {
+    return reply.status(200).send();
+  });
+
   await server.listen({ port: ctx.env.API_PORT, host: "0.0.0.0" });
   console.log(`API server listening on port ${ctx.env.API_PORT}`);
 };
