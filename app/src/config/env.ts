@@ -19,6 +19,9 @@ const envSchema = z.object({
   DB_USER: z.string().min(1).default("root"),
   DB_PASSWORD: z.string().min(0).default("root"),
   DB_NAME: z.string().min(1).default("flapjack2"),
+  HOSTING_URL: z.string().url().optional(),
+  HOSTING_AUTH_NAME: z.string().min(1).optional(),
+  HOSTING_AUTH_TOKEN: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
