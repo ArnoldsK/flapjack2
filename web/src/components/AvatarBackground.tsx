@@ -11,6 +11,9 @@ const GRID_ITEM_SIZE = 250;
 const AVATAR_SIZE = 128;
 const MARGIN = AVATAR_SIZE * 0.1;
 
+const AVATAR_INITIAL_SPEED = 1000;
+const AVATAR_INITIAL_DELAY = 2000;
+
 const getItemCount = (size: number): number => {
   const count = Math.ceil(size / GRID_ITEM_SIZE);
 
@@ -29,6 +32,8 @@ interface Placement {
   urlIndex: number;
   offsetX: number;
   offsetY: number;
+  animationDelayMs: number;
+  animationDurationMs: number;
 }
 
 export const AvatarBackground: FC = () => {
@@ -77,6 +82,14 @@ export const AvatarBackground: FC = () => {
                 urlIndex,
                 offsetX: getAvatarPosition(),
                 offsetY: getAvatarPosition(),
+                animationDelayMs: randomInt(
+                  AVATAR_INITIAL_DELAY * 0.5,
+                  AVATAR_INITIAL_DELAY,
+                ),
+                animationDurationMs: randomInt(
+                  AVATAR_INITIAL_SPEED * 0.5,
+                  AVATAR_INITIAL_SPEED,
+                ),
               });
             }
           }
@@ -101,9 +114,9 @@ export const AvatarBackground: FC = () => {
     }
   }, [urls.length]);
 
-  const onMouseMove = useCallback((ev: React.MouseEvent<HTMLImageElement>) => {
-    const imgEl = ev.currentTarget;
-    const rect = imgEl.getBoundingClientRect();
+  const onMouseMove = useCallback((ev: React.MouseEvent<HTMLDivElement>) => {
+    const el = ev.currentTarget;
+    const rect = el.getBoundingClientRect();
     const degY = range(
       ev.nativeEvent.offsetX,
       0,
@@ -120,15 +133,24 @@ export const AvatarBackground: FC = () => {
     );
     const brightness = range(ev.nativeEvent.offsetY, 0, rect.height, 1.2, 0.8);
 
-    imgEl.style.transform = `rotateX(${degX}deg) rotateY(${degY}deg) scale(1.1)`;
-    imgEl.style.filter = `brightness(${brightness})`;
+    el.style.transform = `rotateX(${degX}deg) rotateY(${degY}deg) scale(1.1)`;
+    el.style.filter = `brightness(${brightness})`;
   }, []);
 
-  const onMouseLeave = useCallback((ev: React.MouseEvent<HTMLImageElement>) => {
-    const imgEl = ev.currentTarget;
-    imgEl.style.transform = "rotateX(0deg) rotateY(0deg)";
-    imgEl.style.filter = "brightness(1)";
+  const onMouseLeave = useCallback((ev: React.MouseEvent<HTMLDivElement>) => {
+    const el = ev.currentTarget;
+    el.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
+    el.style.filter = "brightness(1)";
   }, []);
+
+  const onAnimationEnd = useCallback(
+    (ev: React.AnimationEvent<HTMLDivElement>) => {
+      const el = ev.currentTarget;
+      el.style.animation = "none";
+      el.style.transform = "scale(1)";
+    },
+    [],
+  );
 
   if (urls.length === 0) return null;
 
@@ -162,20 +184,27 @@ export const AvatarBackground: FC = () => {
               perspective: AVATAR_SIZE * 4,
             }}
           >
-            <img
-              alt=""
-              className="pointer-events-auto rounded-full opacity-50 transition-[transform,filter] duration-200 ease-out"
-              src={urls[p.urlIndex]}
+            <div
+              className="pointer-events-auto rounded-full opacity-50 overflow-hidden transition-[transform,filter] duration-200 ease-out"
               style={{
                 position: "absolute",
                 left: p.offsetX,
                 top: p.offsetY,
                 width: AVATAR_SIZE,
                 height: AVATAR_SIZE,
+                transform: "scale(0)",
+                animation: `spin-expand-in ${p.animationDurationMs}ms ${p.animationDelayMs}ms forwards ease-in-out`,
               }}
+              onAnimationEnd={onAnimationEnd}
               onMouseMove={onMouseMove}
               onMouseLeave={onMouseLeave}
-            />
+            >
+              <img
+                alt=""
+                className="size-full rounded-full object-cover pointer-events-none"
+                src={urls[p.urlIndex]}
+              />
+            </div>
           </div>
         );
       })}
