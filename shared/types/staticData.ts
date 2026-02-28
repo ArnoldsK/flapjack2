@@ -1,6 +1,4 @@
-export enum StaticDataType {
-  WeekRecap = "weekRecap",
-}
+export type StaticDataType = "weekRecap";
 
 export interface WeekRecapMessage {
   id: string;
@@ -33,5 +31,5 @@ export interface WeekRecapData {
 }
 
 export type StaticData = {
-  [StaticDataType.WeekRecap]: WeekRecapData;
+  weekRecap: WeekRecapData;
 };

@@ -12,9 +12,11 @@ export default defineEvent({
   run: async (ctx, client) => {
     console.log(`Logged in as ${client.user?.displayName ?? "Unknown user"}`);
 
-    await ctx.guild().members.fetch();
-
     if (ctx.env.NODE_ENV === "production") {
+      // Prefetch all members to avoid rate limiting
+      await ctx.guild().members.fetch();
+
+      // Send git commit log to logs channel
       const channel = ctx
         .guild()
         .channels.cache.get(staticConfig.channels.logs);

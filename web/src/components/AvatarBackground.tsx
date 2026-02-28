@@ -29,9 +29,7 @@ interface Placement {
 }
 
 export const AvatarBackground: FC = () => {
-  const { data: urls = [] } = trpc.avatars.getRandom.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const { data: urls = [] } = trpc.avatars.getRandom.useQuery();
   const [placements, setPlacements] = useState<Placement[]>([]);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const urlsRef = useRef(urls);

@@ -7,7 +7,13 @@ import { getTrpcClient, trpc } from "@web/lib/trpc";
 
 import "./index.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 const trpcClient = getTrpcClient();
 
 createRoot(document.getElementById("root")!).render(

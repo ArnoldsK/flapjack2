@@ -1,6 +1,9 @@
 import path from "node:path";
 import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
 import type { Attachment } from "discord.js";
+
+dayjs.extend(isoWeek);
 import { ChannelType, type Message, type TextChannel } from "discord.js";
 
 import { staticConfig } from "@app/config/static";
@@ -9,29 +12,9 @@ import { defineJob } from "@app/jobs/defineJob";
 import * as Hosting from "@app/modules/hosting";
 import * as StaticData from "@app/modules/staticData";
 import { isDiscordAttachmentUrl } from "@app/utils/isDiscordAttachmentUrl";
-import { StaticDataType, type WeekRecapMessage } from "@shared/types";
+import type { WeekRecapMessage } from "@shared/types";
 
-export const RECAP_CHANNEL_IDS = new Set([
-  staticConfig.channels.general,
-  staticConfig.channels.bepsi,
-  staticConfig.channels.irl,
-  staticConfig.channels.auto,
-  staticConfig.channels.technology,
-  staticConfig.channels.movies,
-  staticConfig.channels.animals,
-  staticConfig.channels.politics,
-  staticConfig.channels.estate,
-  staticConfig.channels.money,
-  staticConfig.channels.food,
-  staticConfig.channels.health,
-  staticConfig.channels.weeb,
-  staticConfig.channels.games,
-]);
-
-export const RECAP_PRIVATE_CHANNEL_IDS = new Set([
-  staticConfig.channels.irl,
-  staticConfig.channels.weeb,
-]);
+const MIN_UNIQUE_REACTORS_FOR_RECAP = 5;
 
 const getUrlFileExtension = (fileUrl: string): string =>
   path.extname(new URL(fileUrl).pathname);
@@ -65,13 +48,19 @@ const fetchMessagesUntil = async (
 
 const getWeekMessages = async (ctx: AppContext): Promise<Message[]> => {
   const guild = ctx.guild();
-  const endDate = dayjs()
-    .subtract(1, ctx.env.NODE_ENV === "development" ? "day" : "week")
-    .toDate();
+
+  const isDev = ctx.env.NODE_ENV === "development";
+  const endDate: Date = isDev
+    ? dayjs().subtract(1, "day").toDate()
+    : dayjs().subtract(1, "week").startOf("isoWeek").toDate(); // last week Monday 0:00
+  const startDate: Date = isDev
+    ? dayjs().toDate()
+    : dayjs().startOf("isoWeek").toDate(); // current week Monday 0:00 (exclusive cap)
 
   const channels = guild.channels.cache.filter(
     (ch): ch is TextChannel =>
-      ch.type === ChannelType.GuildText && RECAP_CHANNEL_IDS.has(ch.id),
+      ch.type === ChannelType.GuildText &&
+      staticConfig.recapChannelIds.includes(ch.id),
   );
 
   const messageGroups = await Promise.all(
@@ -82,10 +71,18 @@ const getWeekMessages = async (ctx: AppContext): Promise<Message[]> => {
     }),
   );
 
+  const endTime = endDate.getTime();
+  const startTime = startDate.getTime();
+
   return messageGroups
     .flat()
     .filter(
-      (message) => !message.system && !message.author.bot && message.member,
+      (message) =>
+        !message.system &&
+        !message.author.bot &&
+        message.member &&
+        message.createdAt.getTime() >= endTime &&
+        message.createdAt.getTime() < startTime,
     );
 };
 
@@ -129,7 +126,15 @@ const parseRecapMessage = async (
   const member = message.member;
   if (!member) throw new Error("Member is not defined");
 
-  const isPrivate = RECAP_PRIVATE_CHANNEL_IDS.has(channel.id);
+  const isPrivate = staticConfig.recapPrivateChannelIds.includes(channel.id);
+
+  const reactionUserIds = new Set<string>();
+  for (const reaction of message.reactions.cache.values()) {
+    const users = await reaction.users.fetch();
+    for (const [, user] of users) {
+      reactionUserIds.add(user.id);
+    }
+  }
 
   return {
     id: message.id,
@@ -154,19 +159,14 @@ const parseRecapMessage = async (
       },
       count: reaction.count,
     })),
-    reactionCount: 0,
+    reactionCount: reactionUserIds.size,
   };
 };
 
-const parseMessageDataReactions = (
+const filterByReactionCount = (
   messages: WeekRecapMessage[],
 ): WeekRecapMessage[] =>
-  messages
-    .map((message) => ({
-      ...message,
-      reactionCount: message.reactions.reduce((c, r) => c + r.count, 0),
-    }))
-    .filter((el) => el.reactionCount >= 5);
+  messages.filter((el) => el.reactionCount >= MIN_UNIQUE_REACTORS_FOR_RECAP);
 
 const uploadMessageDataAttachments = async (
   ctx: AppContext,
@@ -264,7 +264,7 @@ export default defineJob({
     }
 
     let recapMessages = await Promise.all(weekMessages.map(parseRecapMessage));
-    recapMessages = parseMessageDataReactions(recapMessages);
+    recapMessages = filterByReactionCount(recapMessages);
     recapMessages = await uploadMessageDataAttachments(ctx, recapMessages);
 
     if (recapMessages.length === 0) {
@@ -273,7 +273,7 @@ export default defineJob({
       return;
     }
 
-    await StaticData.set(ctx, StaticDataType.WeekRecap, {
+    await StaticData.set(ctx, "weekRecap", {
       createdAt: new Date(),
       messages: recapMessages,
     });
