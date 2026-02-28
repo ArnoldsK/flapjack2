@@ -1,8 +1,11 @@
 import type { FC } from "react";
 
+import { useDocumentTitle } from "@web/hooks/useDocumentTitle";
 import { trpc } from "@web/lib/trpc";
 
 export const StatsPage: FC = () => {
+  useDocumentTitle("Stats");
+
   const { data, isLoading, error } = trpc.stats.getOverview.useQuery();
 
   if (isLoading) return <p className="text-zinc-400">Loading stats…</p>;

@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { WeekRecapMessage } from "@shared/types";
 import type { FC } from "react";
 
+import { useDocumentTitle } from "@web/hooks/useDocumentTitle";
 import { trpc } from "@web/lib/trpc";
 
 const INITIAL_MESSAGES_PER_CHANNEL = 5;
@@ -240,6 +241,8 @@ const RecapMessageRow: FC<{
 };
 
 export const RecapPage: FC = () => {
+  useDocumentTitle("Recap");
+
   const { data, isLoading, error } = trpc.recap.getWeekRecap.useQuery();
   const [expandedChannels, setExpandedChannels] = useState<Set<string>>(
     () => new Set(),
