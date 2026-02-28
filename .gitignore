@@ -1,5 +1,6 @@
 node_modules
 .env
+.last-commit-hash
 app/dist
 web/dist
 # types/ is source-only; ignore any compiled output if a build ever emits here
