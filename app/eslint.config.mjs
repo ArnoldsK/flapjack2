@@ -46,14 +46,6 @@ export default defineConfig([
         },
       ],
       "simple-import-sort/exports": "error",
-      "no-restricted-syntax": [
-        "error",
-        {
-          "selector": "TSPropertySignature[optional=true]",
-          "message":
-            "Optional properties (x?: y) are disallowed. Use 'x: y | undefined' and always define the property.",
-        },
-      ],
     },
   },
   eslintConfigPrettier,

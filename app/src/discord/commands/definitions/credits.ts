@@ -5,10 +5,6 @@ import { staticConfig } from "@app/config/static";
 import type { AppContext } from "@app/context";
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import * as Credits from "@app/modules/credits";
-import {
-  formatCredits,
-  parseCreditsAmount,
-} from "@app/modules/credits/utils/formatCredits";
 
 enum SubcommandName {
   View = "view",
@@ -22,8 +18,6 @@ enum OptionName {
   Amount = "amount",
 }
 
-const AMOUNT_DESCRIPTION = "Amount (e.g. 100, 1k, 2m, all)";
-
 const isCasinoChannel = (channelId: string | null): boolean =>
   channelId === staticConfig.channels.casino;
 
@@ -32,20 +26,8 @@ const replyFlags = (
 ): MessageFlags.Ephemeral | undefined =>
   isCasinoChannel(channelId) ? undefined : MessageFlags.Ephemeral;
 
-const effective = (row: Credits.db.Table | null): number =>
-  (row?.credits ?? 0) * (row?.multiplier ?? 1);
-
-const toCreditsMultiplier = (
-  effectiveValue: number,
-): {
-  credits: number;
-  multiplier: number;
-} => {
-  const credits = Math.abs(effectiveValue);
-  const multiplier = effectiveValue < 0 ? -1 : 1;
-
-  return { credits, multiplier };
-};
+const effective = (row: Credits.db.Table | null): bigint =>
+  (row?.credits ?? 0n) * BigInt(row?.multiplier ?? 1);
 
 export default defineCommand({
   version: 1,
@@ -79,7 +61,7 @@ export default defineCommand({
         .addStringOption((opt) =>
           opt
             .setName(OptionName.Amount)
-            .setDescription(AMOUNT_DESCRIPTION)
+            .setDescription("Amount (e.g. 100, 1k, 2m, all)")
             .setRequired(true),
         ),
     )
@@ -148,7 +130,7 @@ const handleView = async (
     embeds: [
       {
         color: member.displayColor ?? undefined,
-        description: `**${intro} ${formatCredits(eff)}**`,
+        description: `**${intro} ${Credits.utils.formatCredits(eff)}**`,
       },
     ],
     flags: replyFlags(interaction.channelId),
@@ -172,7 +154,9 @@ const handleTop = async (
       };
     })
     .filter((x) => x.member && !x.member.user.bot)
-    .sort((a, b) => b.effective - a.effective)
+    .sort((a, b) =>
+      b.effective > a.effective ? 1 : b.effective < a.effective ? -1 : 0,
+    )
     .slice(0, 9);
 
   if (withEffective.length === 0) {
@@ -189,7 +173,7 @@ const handleTop = async (
       {
         fields: withEffective.map(({ member, effective: eff }, i) => ({
           name: `#${i + 1} ${member!.displayName}`,
-          value: formatCredits(eff),
+          value: Credits.utils.formatCredits(eff),
           inline: true,
         })),
       },
@@ -240,7 +224,7 @@ const handleGive = async (
 
   let amount: number;
   try {
-    amount = parseCreditsAmount(amountStr, senderEff);
+    amount = Credits.utils.parseCreditsAmount(amountStr, Number(senderEff));
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Invalid amount.";
 
@@ -249,25 +233,15 @@ const handleGive = async (
     return;
   }
 
-  const recipientRow = await Credits.getByUserId(ctx, targetUser.id);
-  const recipientEff = effective(recipientRow);
-  const newSenderEff = senderEff - amount;
-  const newRecipientEff = recipientEff + amount;
-
-  const senderUpsert = toCreditsMultiplier(newSenderEff);
-  const recipientUpsert = toCreditsMultiplier(newRecipientEff);
-
-  await Credits.upsert(ctx, {
-    user_id: senderId,
-    credits: senderUpsert.credits,
-    multiplier: senderUpsert.multiplier,
-    last_message_at: senderRow?.last_message_at,
+  await Credits.utils.modifyForUser(ctx, {
+    userId: senderId,
+    byAmount: -amount,
+    lastMessageAt: undefined,
   });
-  await Credits.upsert(ctx, {
-    user_id: targetUser.id,
-    credits: recipientUpsert.credits,
-    multiplier: recipientUpsert.multiplier,
-    last_message_at: recipientRow?.last_message_at,
+  await Credits.utils.modifyForUser(ctx, {
+    userId: targetUser.id,
+    byAmount: amount,
+    lastMessageAt: undefined,
   });
 
   await interaction.reply({
@@ -276,7 +250,7 @@ const handleGive = async (
         color:
           guild.members.cache.get(interaction.user.id)?.displayColor ??
           undefined,
-        description: `Gave ${formatCredits(amount)} to ${targetMember.displayName}`,
+        description: `Gave ${Credits.utils.formatCredits(amount)} to ${targetMember.displayName}`,
       },
     ],
     flags: replyFlags(interaction.channelId),
@@ -310,16 +284,10 @@ const handleAdjust = async (
   }
 
   const delta = interaction.options.getInteger(OptionName.Amount, true);
-  const row = await Credits.getByUserId(ctx, targetUser.id);
-  const eff = effective(row);
-  const newEff = eff + delta;
-  const { credits, multiplier } = toCreditsMultiplier(newEff);
-
-  await Credits.upsert(ctx, {
-    user_id: targetUser.id,
-    credits,
-    multiplier,
-    last_message_at: row?.last_message_at,
+  await Credits.utils.modifyForUser(ctx, {
+    userId: targetUser.id,
+    byAmount: delta,
+    lastMessageAt: undefined,
   });
 
   await interaction.reply({
@@ -328,7 +296,7 @@ const handleAdjust = async (
         color:
           guild.members.cache.get(interaction.user.id)?.displayColor ??
           undefined,
-        description: `Adjusted by ${formatCredits(delta)} for ${targetMember.displayName}`,
+        description: `Adjusted by ${Credits.utils.formatCredits(delta)} for ${targetMember.displayName}`,
       },
     ],
     flags: MessageFlags.Ephemeral,

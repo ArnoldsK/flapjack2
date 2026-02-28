@@ -30,6 +30,15 @@ export default defineEvent({
       }
     }
 
-    await Credits.utils.addMessageCredits(ctx, userId, message.createdAt);
+    const creditsRow = await Credits.getByUserId(ctx, userId);
+    const creditsAmount = Credits.utils.getMessageCreditsAmount(
+      creditsRow,
+      message.createdAt,
+    );
+    await Credits.utils.modifyForUser(ctx, {
+      userId,
+      byAmount: creditsAmount,
+      lastMessageAt: message.createdAt,
+    });
   },
 });

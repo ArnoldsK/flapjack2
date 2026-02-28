@@ -6,6 +6,5 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src", "../shared"],
-  "exclude": ["**/*.test.ts"]
+  "include": ["src", "../shared"]
 }

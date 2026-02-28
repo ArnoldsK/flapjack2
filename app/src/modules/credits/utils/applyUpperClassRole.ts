@@ -1,17 +1,13 @@
 import { staticConfig } from "@app/config/static";
 import type { AppContext } from "@app/context";
-import * as Credits from "@app/modules/credits";
 import { UPPER_CLASS_CREDITS } from "@app/modules/credits/constants";
 
 export const applyUpperClassRole = async (
   ctx: AppContext,
-  userId: string,
+  { userId, effective }: { userId: string; effective: bigint },
 ): Promise<void> => {
   const member = ctx.guild().members.cache.get(userId);
   if (!member || member.user.bot) return;
-
-  const row = await Credits.getByUserId(ctx, userId);
-  const effective = (row?.credits ?? 0) * (row?.multiplier ?? 1);
 
   const role = ctx.guild().roles.cache.get(staticConfig.roles.upperClass);
   if (!role) return;

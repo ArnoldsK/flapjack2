@@ -1,3 +1,5 @@
+import { Unicode } from "@app/constants";
+
 import {
   formatCredits,
   formatCreditsAmount,
@@ -64,16 +66,25 @@ describe("formatCredits", () => {
     expect(formatCredits(0)).toBe("no credits");
   });
 
-  it("returns formatted string for positive values", () => {
-    expect(formatCredits(500)).toBe("500");
-    expect(formatCredits(10_000)).toBe("10K");
-    expect(formatCredits(1_500_000)).toBe("1.5M");
-    expect(formatCredits(1_000_000_000)).toBe("1B");
+  it("returns formatted string with emoji for positive values", () => {
+    expect(formatCredits(500)).toBe(
+      `500${Unicode.ThinSpace}<:Coins100:1204533919073042432>`,
+    );
+    expect(formatCredits(10_000)).toContain("10K");
+    expect(formatCredits(10_000)).toContain("<:Coins1000:");
+    expect(formatCredits(1_500_000)).toContain("1.5M");
+    expect(formatCredits(1_000_000_000)).toContain("1B");
   });
 
-  it("returns formatted string for negative values", () => {
-    expect(formatCredits(-100)).toBe("-100");
-    expect(formatCredits(-1_000_000)).toBe("-1M");
+  it("returns formatted string with emoji for negative values", () => {
+    expect(formatCredits(-100)).toContain("-100");
+    expect(formatCredits(-1_000_000)).toContain("-1M");
+  });
+
+  it("includes withTimes when provided", () => {
+    const result = formatCredits(100, { withTimes: 2 });
+    expect(result).toContain("100");
+    expect(result).toContain("×2");
   });
 });
 

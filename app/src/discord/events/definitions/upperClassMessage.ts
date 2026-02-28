@@ -20,22 +20,19 @@ export default defineEvent({
     }
 
     const row = await Credits.getByUserId(ctx, message.member.id);
-    const effective = (row?.credits ?? 0) * (row?.multiplier ?? 1);
+    const creditsVal = row?.credits ?? 0n;
+    const mult = row?.multiplier ?? 1;
+    const effective = creditsVal * BigInt(mult);
 
     if (effective < UPPER_CLASS_MESSAGE_CREDITS) {
       await message.delete();
       return;
     }
 
-    const newEffective = effective - UPPER_CLASS_MESSAGE_CREDITS;
-    const credits = Math.abs(newEffective);
-    const multiplier = newEffective < 0 ? -1 : 1;
-
-    await Credits.upsert(ctx, {
-      user_id: message.member.id,
-      credits,
-      multiplier,
-      last_message_at: row?.last_message_at,
+    await Credits.utils.modifyForUser(ctx, {
+      userId: message.member.id,
+      byAmount: -Number(UPPER_CLASS_MESSAGE_CREDITS),
+      lastMessageAt: undefined,
     });
   },
 });
