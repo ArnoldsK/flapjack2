@@ -1,8 +1,11 @@
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { SlashCommandBuilder } from "discord.js";
 
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import * as Reminder from "@app/modules/reminder";
+
+dayjs.extend(relativeTime);
 
 enum OptionName {
   DurationType = "duration",
@@ -79,9 +82,7 @@ export default defineCommand({
     const now = dayjs();
     const expiresAt = now.add(durationValue, durationType);
 
-    await interaction.reply(
-      `Okay, I'll remind you in ${durationValue} ${durationType}.`,
-    );
+    await interaction.reply(`Okay, I'll remind you ${expiresAt.fromNow()}.`);
     const message = await interaction.fetchReply();
 
     await Reminder.insert(ctx, {
