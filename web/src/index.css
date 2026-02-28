@@ -1,7 +1,81 @@
 @import "tailwindcss";
 
+@keyframes spin-expand-in {
+  0% {
+    transform: scale(0.2) rotate(-15deg);
+  }
+  75% {
+    transform: scale(1.2) rotate(15deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes spin-horizontal {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes fade-in {
+  0%,
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 @layer base {
   body {
     @apply min-h-screen bg-zinc-950 text-zinc-100 antialiased;
+  }
+}
+
+@layer components {
+  .landing-header {
+    margin: -32px 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .landing-header * {
+    margin: 0;
+  }
+
+  .landing-logo {
+    border-radius: 50%;
+    width: 128px;
+    height: 128px;
+    animation:
+      spin-expand-in 1s forwards ease-in-out,
+      spin-horizontal 3s 1s infinite ease-in-out;
+  }
+
+  .landing-logo-floater {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 10px;
+    color: #888;
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+    animation: fade-in 2s forwards ease-in-out;
+  }
+
+  .landing-logo-floater::after {
+    content: "^";
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
   }
 }

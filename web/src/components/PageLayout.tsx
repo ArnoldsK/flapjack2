@@ -5,7 +5,7 @@ import { HeaderNav } from "@web/components/HeaderNav";
 
 export const PageLayout: FC = () => (
   <div className="flex min-h-screen flex-col">
-    <header className="border-b border-zinc-800 bg-zinc-900/80 px-4 py-3 sm:px-6">
+    <header className="relative z-10 border-b border-zinc-800 bg-zinc-900/80 px-4 py-3 sm:px-6">
       <div className="mx-auto flex max-w-4xl items-center justify-between">
         <Link
           to="/"

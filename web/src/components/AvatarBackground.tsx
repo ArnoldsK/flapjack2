@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { range } from "@shared/utils/number";
 import { randomInt, randomValue } from "@shared/utils/random";
 import type { FC } from "react";
 
 import { trpc } from "@web/lib/trpc";
+
+const TILT_DEG = 25;
 
 const GRID_ITEM_SIZE = 250;
 const AVATAR_SIZE = 128;
@@ -55,8 +58,7 @@ export const AvatarBackground: FC = () => {
 
         for (let x = -absX; x <= absX; x++) {
           for (let y = -absY; y <= absY; y++) {
-            // Uncomment this to remove the center cell
-            // if (x === 0 && y === 0) continue;
+            if (x === 0 && y === 0) continue;
 
             const id = getItemId(x, y);
             const existing = prev.find((p) => p.id === id);
@@ -99,6 +101,35 @@ export const AvatarBackground: FC = () => {
     }
   }, [urls.length]);
 
+  const onMouseMove = useCallback((ev: React.MouseEvent<HTMLImageElement>) => {
+    const imgEl = ev.currentTarget;
+    const rect = imgEl.getBoundingClientRect();
+    const degY = range(
+      ev.nativeEvent.offsetX,
+      0,
+      rect.width,
+      -TILT_DEG,
+      TILT_DEG,
+    );
+    const degX = range(
+      ev.nativeEvent.offsetY,
+      0,
+      rect.height,
+      TILT_DEG,
+      -TILT_DEG,
+    );
+    const brightness = range(ev.nativeEvent.offsetY, 0, rect.height, 1.2, 0.8);
+
+    imgEl.style.transform = `rotateX(${degX}deg) rotateY(${degY}deg) scale(1.1)`;
+    imgEl.style.filter = `brightness(${brightness})`;
+  }, []);
+
+  const onMouseLeave = useCallback((ev: React.MouseEvent<HTMLImageElement>) => {
+    const imgEl = ev.currentTarget;
+    imgEl.style.transform = "rotateX(0deg) rotateY(0deg)";
+    imgEl.style.filter = "brightness(1)";
+  }, []);
+
   if (urls.length === 0) return null;
 
   const { width, height } = size;
@@ -108,7 +139,7 @@ export const AvatarBackground: FC = () => {
   return (
     <div
       aria-hidden
-      className="fixed inset-0 overflow-hidden pointer-events-none -z-10"
+      className="fixed inset-0 z-0 overflow-hidden pointer-events-none"
       style={{ isolation: "isolate" }}
     >
       {placements.map((p) => {
@@ -120,7 +151,7 @@ export const AvatarBackground: FC = () => {
         return (
           <div
             key={p.id}
-            className="absolute"
+            className="absolute pointer-events-none"
             style={{
               position: "fixed",
               left: `${xPercent}%`,
@@ -128,11 +159,12 @@ export const AvatarBackground: FC = () => {
               transform: "translate(-50%, -50%)",
               width: GRID_ITEM_SIZE,
               height: GRID_ITEM_SIZE,
+              perspective: AVATAR_SIZE * 4,
             }}
           >
             <img
               alt=""
-              className="rounded-full opacity-50"
+              className="pointer-events-auto rounded-full opacity-50 transition-[transform,filter] duration-200 ease-out"
               src={urls[p.urlIndex]}
               style={{
                 position: "absolute",
@@ -141,6 +173,8 @@ export const AvatarBackground: FC = () => {
                 width: AVATAR_SIZE,
                 height: AVATAR_SIZE,
               }}
+              onMouseMove={onMouseMove}
+              onMouseLeave={onMouseLeave}
             />
           </div>
         );
