@@ -12,8 +12,8 @@ export const modifyForUser = async (
   },
 ): Promise<Credits.db.Table> => {
   const row = await Credits.getByUserId(ctx, params.userId);
-  const creditsVal = row?.credits ?? 0n;
-  const mult = row?.multiplier ?? 1;
+  const creditsVal = row == null ? 0n : BigInt(row.credits);
+  const mult = row == null ? 1 : Number(row.multiplier);
   const effective = creditsVal * BigInt(mult);
   const newEffective = effective + BigInt(params.byAmount);
   const credits = newEffective < 0n ? -newEffective : newEffective;

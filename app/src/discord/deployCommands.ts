@@ -71,10 +71,10 @@ export const deployCommands = async (
     body: localPayload,
   });
   console.log(
-    "Deployed commands:",
-    Array.from(commands.values())
-      .map((cmd) => `- ${cmd.data.name}`)
-      .join("\n"),
+    "Deployed commands:\n" +
+      Array.from(commands.values())
+        .map((cmd) => `- ${cmd.data.name}`)
+        .join("\n"),
   );
 };
 

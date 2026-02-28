@@ -27,7 +27,8 @@ const replyFlags = (
   isCasinoChannel(channelId) ? undefined : MessageFlags.Ephemeral;
 
 const effective = (row: Credits.db.Table | null): bigint =>
-  (row?.credits ?? 0n) * BigInt(row?.multiplier ?? 1);
+  (row != null ? BigInt(row.credits) : 0n) *
+  BigInt(row != null ? Number(row.multiplier) : 1);
 
 export default defineCommand({
   version: 1,
