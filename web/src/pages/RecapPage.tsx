@@ -20,29 +20,38 @@ type ChannelGroup = {
 const VideoWithHoverPlay: FC<{
   url: string;
   videoRef: React.RefObject<HTMLVideoElement | null>;
-}> = ({ url, videoRef }) => {
+  unmuteIntentReceived: boolean;
+  onUnmuteIntent: () => void;
+}> = ({ url, videoRef, unmuteIntentReceived, onUnmuteIntent }) => {
   const [playing, setPlaying] = useState(false);
 
   const onEnter = useCallback(() => {
     setPlaying(true);
     const video = videoRef.current;
     if (video) {
-      video.muted = true; // required for programmatic play() to succeed
-      video.play().then(
-        () => {
-          video.muted = false; // may work in production (HTTPS secure context)
-        },
-        () => {
-          // leave muted if unmute fails (e.g. HTTP or strict policy)
-        },
-      );
+      video.muted = !unmuteIntentReceived;
+      video.play().catch(() => {});
     }
-  }, [videoRef]);
+  }, [videoRef, unmuteIntentReceived]);
 
   const onLeave = useCallback(() => {
     setPlaying(false);
     videoRef.current?.pause();
   }, [videoRef]);
+
+  const onUnmuteClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      const video = videoRef.current;
+      if (video) {
+        video.muted = false;
+      }
+      onUnmuteIntent();
+    },
+    [videoRef, onUnmuteIntent],
+  );
+
+  const showUnmuteNote = playing && !unmuteIntentReceived;
 
   return (
     <div
@@ -56,14 +65,40 @@ const VideoWithHoverPlay: FC<{
         className="max-h-[50vh] max-w-full rounded border border-zinc-700/80 object-contain"
         playsInline
         loop
+        muted
       />
       {!playing && (
         <span
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl text-white drop-shadow-lg"
+          className="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded bg-black/70 px-3 py-2 text-white"
           aria-hidden
         >
-          ▶
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="ml-0.5"
+            aria-hidden
+          >
+            <path d="M8 5v14l11-7z" />
+          </svg>
         </span>
+      )}
+      {showUnmuteNote && (
+        <>
+          <button
+            type="button"
+            onClick={onUnmuteClick}
+            className="absolute inset-0 cursor-pointer rounded"
+            aria-label="Unmute video"
+          />
+          <span
+            className="pointer-events-none absolute bottom-2 right-2 rounded bg-black/70 px-2 py-1 text-xs font-medium text-white"
+            aria-hidden
+          >
+            Click to unmute
+          </span>
+        </>
       )}
     </div>
   );
@@ -80,12 +115,15 @@ const getMessageUrl = (msg: RecapMessage) => {
 
 const RecapMessageRow: FC<{
   message: RecapMessage;
-}> = ({ message }) => {
+  unmuteIntentReceived: boolean;
+  onIntentReceived: () => void;
+}> = ({ message, unmuteIntentReceived, onIntentReceived }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const { https, intent } = useMemo(() => getMessageUrl(message), [message]);
 
   const openDiscord = useCallback(() => {
+    onIntentReceived();
     const blurred = { current: false };
     const onBlur = () => {
       blurred.current = true;
@@ -98,7 +136,7 @@ const RecapMessageRow: FC<{
         window.location.assign(https);
       }
     }, 1000);
-  }, [https, intent]);
+  }, [https, intent, onIntentReceived]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
@@ -147,7 +185,7 @@ const RecapMessageRow: FC<{
           <span className="text-zinc-500 text-xs">{dateStr}</span>
         </div>
         {message.content ? (
-          <p className="mt-1 whitespace-pre-wrap text-zinc-300 text-[15px] leading-relaxed">
+          <p className="mt-1 break-words whitespace-pre-wrap text-zinc-300 text-[15px] leading-relaxed">
             {message.content}
           </p>
         ) : null}
@@ -160,7 +198,12 @@ const RecapMessageRow: FC<{
                 className="block max-h-[66vh] max-w-full rounded object-contain"
               />
             ) : attachment.isVideo ? (
-              <VideoWithHoverPlay url={attachment.url} videoRef={videoRef} />
+              <VideoWithHoverPlay
+                url={attachment.url}
+                videoRef={videoRef}
+                unmuteIntentReceived={unmuteIntentReceived}
+                onUnmuteIntent={onIntentReceived}
+              />
             ) : (
               <span className="text-zinc-500 text-sm">
                 Attachment no longer available — open in Discord to view
@@ -201,6 +244,8 @@ export const RecapPage: FC = () => {
   const [expandedChannels, setExpandedChannels] = useState<Set<string>>(
     () => new Set(),
   );
+  const [unmuteIntentReceived, setUnmuteIntentReceived] = useState(false);
+  const onIntentReceived = useCallback(() => setUnmuteIntentReceived(true), []);
 
   const toggleChannel = useCallback((channelId: string) => {
     setExpandedChannels((prev) => {
@@ -284,7 +329,7 @@ export const RecapPage: FC = () => {
         : null;
 
   return (
-    <div className="mx-auto max-w-[694px]">
+    <div className="mx-auto min-w-0 max-w-[694px]">
       <h1 className="text-2xl font-bold text-white">Week recap</h1>
       {createdAt ? (
         <p className="mt-2 text-sm text-zinc-500">Generated {createdAt}</p>
@@ -307,13 +352,23 @@ export const RecapPage: FC = () => {
                   {channel.name}
                 </p>
                 {messages.map((msg) => (
-                  <RecapMessageRow key={msg.id} message={msg} />
+                  <RecapMessageRow
+                    key={msg.id}
+                    message={msg}
+                    unmuteIntentReceived={unmuteIntentReceived}
+                    onIntentReceived={onIntentReceived}
+                  />
                 ))}
                 {moreMessages.length > 0 && (
                   <>
                     {expandedChannels.has(channel.id) ? (
                       moreMessages.map((msg) => (
-                        <RecapMessageRow key={msg.id} message={msg} />
+                        <RecapMessageRow
+                          key={msg.id}
+                          message={msg}
+                          unmuteIntentReceived={unmuteIntentReceived}
+                          onIntentReceived={onIntentReceived}
+                        />
                       ))
                     ) : (
                       <button
