@@ -1,8 +1,7 @@
 import { staticConfig } from "@app/config/static";
 import type { AppContext } from "@app/context";
 import * as Credits from "@app/modules/credits";
-
-const UPPER_CLASS_CREDITS = 500_000;
+import { UPPER_CLASS_CREDITS } from "@app/modules/credits/constants";
 
 export const applyUpperClassRole = async (
   ctx: AppContext,

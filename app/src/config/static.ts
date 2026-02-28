@@ -3,6 +3,9 @@ export const staticConfig = {
   ownerUserId: "221755442513051649",
   channels: {
     logs: "546830997983854592",
+    upperClass: "868434446502723625",
+    poe: "701811325042688070",
+    runescape: "717772755508002816",
   },
   roles: {
     activeMember: "669608043713003521",

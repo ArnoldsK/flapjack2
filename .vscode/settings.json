@@ -11,5 +11,6 @@
   "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "css.lint.unknownAtRules": "ignore",
-  "jest.runMode": "on-demand"
+  "jest.runMode": "on-demand",
+  "cSpell.words": ["runescape"]
 }
