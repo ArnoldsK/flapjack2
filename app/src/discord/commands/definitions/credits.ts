@@ -1,5 +1,5 @@
 import type { ChatInputCommandInteraction } from "discord.js";
-import { SlashCommandBuilder } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import { staticConfig } from "@app/config/static";
 import type { AppContext } from "@app/context";
@@ -27,8 +27,10 @@ const AMOUNT_DESCRIPTION = "Amount (e.g. 100, 1k, 2m, all)";
 const isCasinoChannel = (channelId: string | null): boolean =>
   channelId === staticConfig.channels.casino;
 
-const ephemeral = (channelId: string | null): boolean =>
-  !isCasinoChannel(channelId);
+const replyFlags = (
+  channelId: string | null,
+): MessageFlags.Ephemeral | undefined =>
+  isCasinoChannel(channelId) ? undefined : MessageFlags.Ephemeral;
 
 const effective = (row: Credits.db.Table | null): number =>
   (row?.credits ?? 0) * (row?.multiplier ?? 1);
@@ -131,7 +133,7 @@ const handleView = async (
   if (!member) {
     await interaction.reply({
       content: "User not found in this server.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     return;
@@ -149,7 +151,7 @@ const handleView = async (
         description: `**${intro} ${formatCredits(eff)}**`,
       },
     ],
-    ephemeral: ephemeral(interaction.channelId),
+    flags: replyFlags(interaction.channelId),
   });
 };
 
@@ -176,7 +178,7 @@ const handleTop = async (
   if (withEffective.length === 0) {
     await interaction.reply({
       content: "No one has any credits yet.",
-      ephemeral: ephemeral(interaction.channelId),
+      flags: replyFlags(interaction.channelId),
     });
 
     return;
@@ -192,7 +194,7 @@ const handleTop = async (
         })),
       },
     ],
-    ephemeral: ephemeral(interaction.channelId),
+    flags: replyFlags(interaction.channelId),
   });
 };
 
@@ -207,7 +209,7 @@ const handleGive = async (
   if (!targetMember) {
     await interaction.reply({
       content: "User not found in this server.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     return;
@@ -216,7 +218,7 @@ const handleGive = async (
   if (targetUser.id === interaction.user.id) {
     await interaction.reply({
       content: "You can't give credits to yourself.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     return;
@@ -225,7 +227,7 @@ const handleGive = async (
   if (targetUser.bot) {
     await interaction.reply({
       content: "You can't give credits to bots.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     return;
@@ -242,7 +244,7 @@ const handleGive = async (
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Invalid amount.";
 
-    await interaction.reply({ content: msg, ephemeral: true });
+    await interaction.reply({ content: msg, flags: MessageFlags.Ephemeral });
 
     return;
   }
@@ -277,7 +279,7 @@ const handleGive = async (
         description: `Gave ${formatCredits(amount)} to ${targetMember.displayName}`,
       },
     ],
-    ephemeral: ephemeral(interaction.channelId),
+    flags: replyFlags(interaction.channelId),
   });
 };
 
@@ -288,7 +290,7 @@ const handleAdjust = async (
   if (ctx.env.NODE_ENV !== "development") {
     await interaction.reply({
       content: "This subcommand is only available in development.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     return;
@@ -301,7 +303,7 @@ const handleAdjust = async (
   if (!targetMember) {
     await interaction.reply({
       content: "User not found in this server.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     return;
@@ -329,6 +331,6 @@ const handleAdjust = async (
         description: `Adjusted by ${formatCredits(delta)} for ${targetMember.displayName}`,
       },
     ],
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 };
