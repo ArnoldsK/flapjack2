@@ -1,4 +1,9 @@
-import { getClientRole, getOrCreateRole } from "./roles";
+import {
+  getClientRole,
+  getOrCreateRole,
+  parseRoleColors,
+  parseSingleColor,
+} from "./roles";
 
 const createMockRole = (
   overrides: Partial<{
@@ -13,6 +18,83 @@ const createMockRole = (
   managed: false,
   position: 1,
   ...overrides,
+});
+
+describe("parseSingleColor", () => {
+  it("returns undefined for undefined input", () => {
+    expect(parseSingleColor(undefined)).toBeUndefined();
+  });
+
+  it("normalizes number 0 to 0x000001 (Discord NIL)", () => {
+    expect(parseSingleColor(0)).toBe(0x000001);
+  });
+
+  it("returns number unchanged when non-zero", () => {
+    expect(parseSingleColor(0xff0000)).toBe(0xff0000);
+    expect(parseSingleColor(0xffffff)).toBe(0xffffff);
+  });
+
+  it("parses hex string and normalizes #000000 to 0x000001", () => {
+    expect(parseSingleColor("#000000")).toBe(0x000001);
+    expect(parseSingleColor("0x000000")).toBe(0x000001);
+  });
+
+  it("parses hex string and returns value when non-zero", () => {
+    expect(parseSingleColor("#ff0000")).toBe(0xff0000);
+    expect(parseSingleColor("#00ff00")).toBe(0x00ff00);
+  });
+
+  it("returns undefined for invalid hex string", () => {
+    expect(parseSingleColor("nothex")).toBeUndefined();
+    expect(parseSingleColor("#gggggg")).toBeUndefined();
+  });
+
+  it("converts RGB tuple to number and normalizes [0,0,0] to 0x000001", () => {
+    expect(parseSingleColor([0, 0, 0])).toBe(0x000001);
+  });
+
+  it("converts RGB tuple to number when non-zero", () => {
+    expect(parseSingleColor([255, 0, 0])).toBe(0xff0000);
+    expect(parseSingleColor([0, 255, 0])).toBe(0x00ff00);
+  });
+});
+
+describe("parseRoleColors", () => {
+  it("returns undefined for undefined input", () => {
+    expect(parseRoleColors(undefined)).toBeUndefined();
+  });
+
+  it("normalizes primaryColor 0 to 0x000001", () => {
+    expect(parseRoleColors({ primaryColor: 0 })).toEqual({
+      primaryColor: 0x000001,
+    });
+  });
+
+  it("passes through primaryColor when non-zero", () => {
+    expect(parseRoleColors({ primaryColor: 0xff0000 })).toEqual({
+      primaryColor: 0xff0000,
+    });
+  });
+
+  it("normalizes secondaryColor and tertiaryColor when 0", () => {
+    expect(
+      parseRoleColors({
+        primaryColor: 0xffffff,
+        secondaryColor: 0,
+        tertiaryColor: 0,
+      }),
+    ).toEqual({
+      primaryColor: 0xffffff,
+      secondaryColor: 0x000001,
+      tertiaryColor: 0x000001,
+    });
+  });
+
+  it("parses string primaryColor and normalizes #000000", () => {
+    expect(parseRoleColors({ primaryColor: "#000000" })).toEqual({
+      primaryColor: 0x000001,
+    });
+  });
 });
 
 describe("getClientRole", () => {

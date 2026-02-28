@@ -6,7 +6,7 @@ import { type RoleCreateOptions } from "discord.js";
 const DISCORD_COLOR_NIL = 0x000000;
 const DISCORD_COLOR_MIN = 0x000001;
 
-const parseSingleColor = (
+export const parseSingleColor = (
   color: number | string | readonly [number, number, number] | undefined,
 ): number | undefined => {
   if (color === undefined) return undefined;
@@ -30,7 +30,7 @@ const parseSingleColor = (
   return value;
 };
 
-const parseRoleColors = (
+export const parseRoleColors = (
   colors: RoleColorsResolvable | undefined,
 ): RoleColorsResolvable | undefined => {
   if (colors === undefined) return undefined;
