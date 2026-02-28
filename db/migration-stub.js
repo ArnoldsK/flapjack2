@@ -3,5 +3,5 @@ exports.up = async (knex) => {};
 
 /** @type {import("knex").Knex.Migration["down"]} */
 exports.down = async () => {
-  throw new Error("Down migration not supported");
+  throw new Error("Down migrations are not allowed");
 };
