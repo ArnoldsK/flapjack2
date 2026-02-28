@@ -1,6 +1,7 @@
 import { Events } from "discord.js";
 
 import { staticConfig } from "@app/config/static";
+import { Color } from "@app/constants";
 import { defineEvent } from "@app/discord/events/defineEvent";
 import { getNewCommits } from "@app/utils/git";
 
@@ -25,10 +26,10 @@ export default defineEvent({
       const description =
         newCommits.length > 0
           ? newCommits.map((c) => `- ${c.message}`).join("\n")
-          : "Restarted with no changes (could be a crash)";
+          : "Restarted with no changes";
 
       await channel.send({
-        embeds: [{ color: 0x00ff00, description }],
+        embeds: [{ color: Color.Green, description }],
       });
     }
   },
