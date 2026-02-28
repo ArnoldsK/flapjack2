@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import { defineCommand } from "@app/discord/commands/defineCommand";
 
@@ -10,6 +10,9 @@ export default defineCommand({
     .setDescription("Replies with Pong!"),
 
   execute: async (_ctx, interaction) => {
-    await interaction.reply(`Pong!`);
+    await interaction.reply({
+      content: "Pong!",
+      flags: [MessageFlags.Ephemeral],
+    });
   },
 });

@@ -3,8 +3,13 @@ import * as Reminder from "@app/modules/reminder";
 
 export default defineJob({
   id: "endReminders",
+
   schedule: "* * * * *", // every minute
+
   description: "Ends reminders that are past their due date",
+
+  productionOnly: false,
+
   run: async (ctx) => {
     const reminders = await Reminder.getAllExpired(ctx);
     if (reminders.length === 0) {

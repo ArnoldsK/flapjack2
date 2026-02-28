@@ -1,7 +1,6 @@
 import type { ChatInputCommandInteraction } from "discord.js";
 import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 
-import { staticConfig } from "@app/config/static";
 import type { AppContext } from "@app/context";
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import { listJobIds, runById } from "@app/jobs";
@@ -32,19 +31,6 @@ export default defineCommand({
   ) => {
     const sub = interaction.options.getSubcommand();
     if (sub !== "run") return;
-
-    const ownerId = staticConfig.ownerUserId;
-    const isOwner = ownerId && interaction.user.id === ownerId;
-    const isAdmin =
-      interaction.memberPermissions?.has(PermissionFlagsBits.Administrator) ??
-      false;
-    if (!isOwner && !isAdmin) {
-      await interaction.reply({
-        content: "You do not have permission to run jobs.",
-        ephemeral: true,
-      });
-      return;
-    }
 
     const jobId = interaction.options.getString("job_id", true);
     await interaction.deferReply({ ephemeral: true });

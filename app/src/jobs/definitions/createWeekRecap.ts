@@ -1,0 +1,283 @@
+import path from "node:path";
+import dayjs from "dayjs";
+import type { Attachment } from "discord.js";
+import { ChannelType, type Message, type TextChannel } from "discord.js";
+
+import { staticConfig } from "@app/config/static";
+import type { AppContext } from "@app/context";
+import { defineJob } from "@app/jobs/defineJob";
+import * as Hosting from "@app/modules/hosting";
+import * as StaticData from "@app/modules/staticData";
+import { isDiscordAttachmentUrl } from "@app/utils/isDiscordAttachmentUrl";
+import { StaticDataType, type WeekRecapMessage } from "@shared/types";
+
+export const RECAP_CHANNEL_IDS = new Set([
+  staticConfig.channels.general,
+  staticConfig.channels.bepsi,
+  staticConfig.channels.irl,
+  staticConfig.channels.auto,
+  staticConfig.channels.technology,
+  staticConfig.channels.movies,
+  staticConfig.channels.animals,
+  staticConfig.channels.politics,
+  staticConfig.channels.estate,
+  staticConfig.channels.money,
+  staticConfig.channels.food,
+  staticConfig.channels.health,
+  staticConfig.channels.weeb,
+  staticConfig.channels.games,
+]);
+
+export const RECAP_PRIVATE_CHANNEL_IDS = new Set([
+  staticConfig.channels.irl,
+  staticConfig.channels.weeb,
+]);
+
+const getUrlFileExtension = (fileUrl: string): string =>
+  path.extname(new URL(fileUrl).pathname);
+
+const fetchMessagesUntil = async (
+  channel: TextChannel,
+  endDate: Date,
+  lastId?: string,
+): Promise<Message[]> => {
+  const messages: Message[] = [
+    ...(await channel.messages.fetch({ limit: 100, before: lastId })).values(),
+  ];
+
+  for (let i = 0; i < messages.length; i++) {
+    if (messages[i].createdAt.getTime() < endDate.getTime()) {
+      return messages.slice(0, i);
+    }
+  }
+
+  if (messages.length === 0) {
+    return messages;
+  }
+
+  const lastMessage = messages[messages.length - 1];
+
+  return [
+    ...messages,
+    ...(await fetchMessagesUntil(channel, endDate, lastMessage?.id)),
+  ];
+};
+
+const getWeekMessages = async (ctx: AppContext): Promise<Message[]> => {
+  const guild = ctx.guild();
+  const endDate = dayjs()
+    .subtract(1, ctx.env.NODE_ENV === "development" ? "day" : "week")
+    .toDate();
+
+  const channels = guild.channels.cache.filter(
+    (ch): ch is TextChannel =>
+      ch.type === ChannelType.GuildText && RECAP_CHANNEL_IDS.has(ch.id),
+  );
+
+  const messageGroups = await Promise.all(
+    [...channels.values()].map((channel) => {
+      console.log("> Recap > Fetching messages for", channel.name);
+
+      return fetchMessagesUntil(channel, endDate);
+    }),
+  );
+
+  return messageGroups
+    .flat()
+    .filter(
+      (message) => !message.system && !message.author.bot && message.member,
+    );
+};
+
+const parseAttachment = (
+  attachment:
+    | (Pick<Attachment, "id" | "url"> &
+        Partial<Pick<Attachment, "contentType">>)
+    | undefined,
+): WeekRecapMessage["firstAttachment"] => {
+  if (!attachment) {
+    return null;
+  }
+
+  const url = attachment.url;
+  const isImage =
+    !!attachment.contentType?.startsWith("image/") ||
+    /(?:png|jpe?g|gif)/i.test(url);
+  const isVideo =
+    !!attachment.contentType?.startsWith("video/") ||
+    /(?:mp4|mov|webm)/i.test(url);
+
+  return {
+    id: attachment.id,
+    isImage,
+    isVideo,
+    url,
+  };
+};
+
+const parseRecapMessage = async (
+  message: Message,
+): Promise<WeekRecapMessage> => {
+  const guild = message.guild;
+  if (!guild) throw new Error("Guild is not defined");
+
+  const channel = message.channel;
+  if (!channel.isTextBased() || channel.type !== ChannelType.GuildText) {
+    throw new Error("Channel is not a text channel");
+  }
+
+  const member = message.member;
+  if (!member) throw new Error("Member is not defined");
+
+  const isPrivate = RECAP_PRIVATE_CHANNEL_IDS.has(channel.id);
+
+  return {
+    id: message.id,
+    createdAt: message.createdAt,
+    content: isPrivate ? "" : message.cleanContent.trim(),
+    firstAttachment: isPrivate
+      ? null
+      : parseAttachment(message.attachments.first()),
+    guild: { id: guild.id },
+    channel: { id: channel.id, name: channel.name },
+    member: {
+      id: member.id,
+      displayName: member.nickname ?? member.displayName,
+      username: member.user.username,
+    },
+    reactions: [...message.reactions.cache.values()].map((reaction) => ({
+      emoji: {
+        identifier: reaction.emoji.identifier,
+        id: reaction.emoji.id,
+        name: reaction.emoji.name,
+        url: reaction.emoji.imageURL() ?? "",
+      },
+      count: reaction.count,
+    })),
+    reactionCount: 0,
+  };
+};
+
+const parseMessageDataReactions = (
+  messages: WeekRecapMessage[],
+): WeekRecapMessage[] =>
+  messages
+    .map((message) => ({
+      ...message,
+      reactionCount: message.reactions.reduce((c, r) => c + r.count, 0),
+    }))
+    .filter((el) => el.reactionCount >= 5);
+
+const uploadMessageDataAttachments = async (
+  ctx: AppContext,
+  messages: WeekRecapMessage[],
+): Promise<WeekRecapMessage[]> => {
+  try {
+    await Hosting.deleteAllFiles(ctx);
+
+    return await Promise.all(
+      messages.map(async (message) => {
+        let attachment = message.firstAttachment;
+        if (!attachment && isDiscordAttachmentUrl(message.content)) {
+          attachment = parseAttachment({
+            id: message.id,
+            url: message.content,
+          });
+          message.content = "";
+        }
+
+        if (attachment) {
+          const hosted = await Hosting.uploadUrlFile(ctx, [
+            {
+              filename: attachment.id + getUrlFileExtension(attachment.url),
+              url: attachment.url,
+            },
+          ]);
+          const [hostedFile] = hosted;
+
+          if (hostedFile) {
+            attachment = { ...attachment, url: hostedFile.url };
+          } else {
+            attachment = {
+              ...attachment,
+              isImage: false,
+              isVideo: false,
+            };
+          }
+
+          message.firstAttachment = attachment;
+        }
+
+        return message;
+      }),
+    );
+  } catch (error) {
+    console.error("> Failed to upload images to CDN", error);
+
+    return messages;
+  }
+};
+
+const sendAnnouncement = async (ctx: AppContext): Promise<void> => {
+  if (ctx.env.NODE_ENV === "development") {
+    return;
+  }
+
+  const guild = ctx.guild();
+  const channel = guild.channels.cache.get(
+    staticConfig.channels.announcements,
+  ) as TextChannel | undefined;
+
+  if (!channel) {
+    return;
+  }
+
+  const content = `New weekly recap at https://pepsidog.lv/recap`;
+
+  const messages = await channel.messages.fetch({ limit: 20 });
+  const previous = messages.find(
+    (m) => m.author.id === guild.client.user?.id && m.content === content,
+  );
+
+  if (previous) {
+    await previous.delete();
+  }
+
+  await channel.send(content);
+};
+
+export default defineJob({
+  id: "createWeekRecap",
+
+  schedule: "0 0 * * 1", // every Monday at midnight
+
+  description: "Create week recap",
+
+  productionOnly: true,
+
+  run: async (ctx) => {
+    const weekMessages = await getWeekMessages(ctx);
+    if (weekMessages.length === 0) {
+      console.log("> Recap > No messages found");
+
+      return;
+    }
+
+    let recapMessages = await Promise.all(weekMessages.map(parseRecapMessage));
+    recapMessages = parseMessageDataReactions(recapMessages);
+    recapMessages = await uploadMessageDataAttachments(ctx, recapMessages);
+
+    if (recapMessages.length === 0) {
+      console.log("> Recap > No messages found after filtering");
+
+      return;
+    }
+
+    await StaticData.set(ctx, StaticDataType.WeekRecap, {
+      createdAt: new Date(),
+      messages: recapMessages,
+    });
+
+    await sendAnnouncement(ctx);
+  },
+});

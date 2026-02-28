@@ -2,9 +2,10 @@ import cron from "node-cron";
 
 import type { AppContext } from "@app/context";
 import type { JobDefinition } from "@app/jobs/defineJob";
+import createWeekRecap from "@app/jobs/definitions/createWeekRecap";
 import endReminders from "@app/jobs/definitions/endReminders";
 
-const registry: JobDefinition[] = [endReminders];
+const registry: JobDefinition[] = [endReminders, createWeekRecap];
 
 export const runById = async (
   ctx: AppContext,
@@ -23,6 +24,10 @@ export const runById = async (
 
 export const registerAll = (ctx: AppContext): void => {
   for (const job of registry) {
+    if (job.productionOnly && ctx.env.NODE_ENV !== "production") {
+      continue;
+    }
+
     cron.schedule(job.schedule, async () => {
       await runById(ctx, job.id);
     });

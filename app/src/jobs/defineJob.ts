@@ -4,6 +4,7 @@ export interface JobDefinition {
   id: string;
   schedule: string;
   description: string;
+  productionOnly: boolean;
   run: (ctx: AppContext) => Promise<void>;
 }
 
