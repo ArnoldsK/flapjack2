@@ -71,7 +71,10 @@ export const deployCommands = async (
     body: localPayload,
   });
   console.log(
-    `Discord guild commands deployed (${localPayload.length} command(s)).`,
+    "Deployed commands:",
+    Array.from(commands.values())
+      .map((cmd) => `- ${cmd.data.name}`)
+      .join("\n"),
   );
 };
 

@@ -12,6 +12,6 @@ exports.up = async (knex) => {
 };
 
 /** @type {import("knex").Knex.Migration["down"]} */
-exports.down = async (knex) => {
-  await knex.schema.dropTableIfExists("stats");
+exports.down = async () => {
+  throw new Error("Down migration not supported");
 };

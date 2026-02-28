@@ -1,14 +1,18 @@
 import type {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
+  SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
 
 import type { AppContext } from "@app/context";
 
 export interface SlashCommandModule {
-  data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
   version: number;
+  data:
+    | SlashCommandBuilder
+    | SlashCommandOptionsOnlyBuilder
+    | SlashCommandSubcommandsOnlyBuilder;
   execute: (
     ctx: AppContext,
     interaction: ChatInputCommandInteraction,

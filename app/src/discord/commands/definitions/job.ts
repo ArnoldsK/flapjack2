@@ -7,6 +7,8 @@ import { defineCommand } from "@app/discord/commands/defineCommand";
 import { listJobIds, runById } from "@app/jobs";
 
 export default defineCommand({
+  version: 1,
+
   data: new SlashCommandBuilder()
     .setName("job")
     .setDescription("Run a scheduled job manually (restricted)")
@@ -23,7 +25,7 @@ export default defineCommand({
             .addChoices(...listJobIds().map((id) => ({ name: id, value: id }))),
         ),
     ),
-  version: 1,
+
   execute: async (
     ctx: AppContext,
     interaction: ChatInputCommandInteraction,
