@@ -2,6 +2,7 @@ import type { Client, ClientEvents } from "discord.js";
 
 import type { AppContext } from "@app/context";
 import type { EventDefinition } from "@app/discord/events/defineEvent";
+import addExpAndCreditsOnMessage from "@app/discord/events/definitions/addExpAndCreditsOnMessage";
 import adjustLinksInMessages from "@app/discord/events/definitions/adjustLinksInMessages";
 import interactionCreate from "@app/discord/events/definitions/interactionCreate";
 import ready from "@app/discord/events/definitions/ready";
@@ -10,6 +11,7 @@ const eventList: EventDefinition<keyof ClientEvents>[] = [
   ready as EventDefinition<keyof ClientEvents>,
   interactionCreate as EventDefinition<keyof ClientEvents>,
   adjustLinksInMessages as EventDefinition<keyof ClientEvents>,
+  addExpAndCreditsOnMessage as EventDefinition<keyof ClientEvents>,
 ];
 
 function groupByEvent(
