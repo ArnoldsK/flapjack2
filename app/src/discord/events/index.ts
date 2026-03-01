@@ -2,6 +2,7 @@ import type { Client, ClientEvents } from "discord.js";
 
 import type { AppContext } from "@app/context";
 import type { EventDefinition } from "@app/discord/events/defineEvent";
+import addChannelNewsRoles from "@app/discord/events/definitions/addChannelNewsRoles";
 import addExpAndCreditsOnMessage from "@app/discord/events/definitions/addExpAndCreditsOnMessage";
 import adjustLinksInMessages from "@app/discord/events/definitions/adjustLinksInMessages";
 import handleVideoLinks from "@app/discord/events/definitions/handleVideoLinks";
@@ -14,6 +15,7 @@ const eventList: EventDefinition<keyof ClientEvents>[] = [
   interactionCreate as EventDefinition<keyof ClientEvents>,
   adjustLinksInMessages as EventDefinition<keyof ClientEvents>,
   addExpAndCreditsOnMessage as EventDefinition<keyof ClientEvents>,
+  addChannelNewsRoles as EventDefinition<keyof ClientEvents>,
   handleVideoLinks as EventDefinition<keyof ClientEvents>,
   upperClassMessage as EventDefinition<keyof ClientEvents>,
 ];
