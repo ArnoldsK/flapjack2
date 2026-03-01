@@ -31,6 +31,26 @@
   }
 }
 
+@keyframes gradient-shift-text {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100px 0;
+  }
+}
+
+.preview-gradient-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: 100px auto;
+  -webkit-text-fill-color: transparent;
+}
+
+.preview-gradient-hover:hover .preview-gradient-text {
+  animation: gradient-shift-text 2s linear infinite;
+}
+
 @layer base {
   body {
     @apply min-h-screen bg-zinc-950 text-zinc-100 antialiased;

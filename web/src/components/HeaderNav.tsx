@@ -5,6 +5,7 @@ const navLinks = [
   { to: "/", label: "Home" },
   { to: "/recap", label: "Recap" },
   { to: "/videos", label: "Videos" },
+  { to: "/color", label: "Color" },
 ] as const;
 
 export const HeaderNav: FC = () => (
