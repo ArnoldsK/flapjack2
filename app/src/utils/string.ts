@@ -1,4 +1,10 @@
 /**
+ * Capitalizes the first character and lowercases the rest.
+ */
+export const ucFirst = (s: string): string =>
+  s.length === 0 ? s : s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase();
+
+/**
  * Joins non-null values with newlines. Useful for multi-line messages where some lines are optional.
  */
 export const joinAsLines = (...values: (string | null | undefined)[]): string =>

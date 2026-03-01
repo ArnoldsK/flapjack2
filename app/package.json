@@ -23,6 +23,7 @@
     "lint": "eslint . && pnpm run typecheck"
   },
   "dependencies": {
+    "engine-blackjack-ts": "^0.9.11",
     "@napi-rs/canvas": "^0.1.56",
     "chroma-js": "^3.0.0",
     "get-image-colors": "^4.0.1",

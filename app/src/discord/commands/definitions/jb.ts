@@ -1,4 +1,4 @@
-import type { GuildMember } from "discord.js";
+import type { APIEmbed, GuildMember } from "discord.js";
 import {
   ActionRowBuilder,
   ComponentType,
@@ -47,14 +47,10 @@ const buildContainerEmbeds = (
     attachmentName?: string | null;
     descriptionLines: (string | null)[];
   },
-): { color?: number; image?: { url: string }; description: string } => {
+): APIEmbed => {
   const description = joinAsLines(...opts.descriptionLines);
-  const embed: {
-    color?: number;
-    image?: { url: string };
-    description: string;
-  } = {
-    description: description || "\u200b",
+  const embed: APIEmbed = {
+    description,
   };
   const displayColor =
     member && "displayColor" in member ? member.displayColor : undefined;
@@ -139,11 +135,14 @@ export default defineCommand({
 
     let response: Message;
     try {
-      response = await interaction.reply({
+      const replyResult = await interaction.reply({
         ...dealPayload,
         flags: replyFlags(interaction.channelId),
-        fetchReply: true,
+        withResponse: true,
       });
+      const message = replyResult.resource?.message;
+      if (!message) throw new Error("Expected message in reply response");
+      response = message;
     } catch (err) {
       activeJbUsers.delete(userId);
       await Credits.utils.modifyForUser(ctx, {
@@ -203,7 +202,7 @@ const getDealReply = (
   isEphemeral: boolean,
 ): {
   files: ReturnType<typeof getCardsAttachment>[];
-  embeds: { color?: number; image?: { url: string }; description: string }[];
+  embeds: APIEmbed[];
   components: ActionRowBuilder<StringSelectMenuBuilder>[];
 } => {
   const descriptionLines: (string | null)[] = [
@@ -246,7 +245,7 @@ const getDrawReply = (
   member: MemberLike,
 ): {
   files: ReturnType<typeof getCardsAttachment>[];
-  embeds: { color?: number; image?: { url: string }; description: string }[];
+  embeds: APIEmbed[];
   components: [];
 } => {
   const attachment = getCardsAttachment({ cards: result.cards, small: true });
@@ -279,7 +278,7 @@ const getTimedOutReply = (
   walletCredits: bigint,
   member: MemberLike,
 ): {
-  embeds: { color?: number; description: string }[];
+  embeds: APIEmbed[];
   components: [];
   files: [];
 } => ({

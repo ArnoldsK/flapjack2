@@ -1,5 +1,6 @@
 import { Events } from "discord.js";
 
+import { Unicode } from "@app/constants";
 import { defineEvent } from "@app/discord/events/defineEvent";
 
 const SS_MOBILE_URL = /(https:\/\/m\.ss\.(?:lv|com)(?:\/.+\.html))/g;
@@ -11,7 +12,7 @@ const INSTAGRAM_REEL_URL =
   /(?:https?:\/\/)(?:www\.)?instagram\.com\/?([a-zA-Z0-9._-]+)?\/([p]+)?([reel]+s?)\/([a-zA-Z0-9-_.]+)\/?([0-9]+)?/i;
 
 const EMOJI_SPAM_THRESHOLD = 5;
-const SS_DESKTOP_PREFIX = "\u200B";
+const SS_DESKTOP_PREFIX = Unicode.ZeroWidthSpace;
 
 export default defineEvent({
   event: Events.MessageCreate,

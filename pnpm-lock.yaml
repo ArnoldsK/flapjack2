@@ -78,6 +78,9 @@ importers:
       dotenv:
         specifier: ^17.3.1
         version: 17.3.1
+      engine-blackjack-ts:
+        specifier: ^0.9.11
+        version: 0.9.11
       fastify:
         specifier: ^5.7.4
         version: 5.7.4
@@ -217,6 +220,10 @@ importers:
         version: 7.3.1(@types/node@24.10.14)(jiti@2.6.1)(lightningcss@1.31.1)(yaml@2.8.2)
 
 packages:
+
+  52-deck@1.1.0:
+    resolution: {integrity: sha512-VqRLjFnh96QRWvOk6oHiIT+2rz9wxszAQyQr2oZeMUt3BTQygI+cr7R/8y1S//B6QHW6KlunxQYlWo1ouGaF3Q==}
+    engines: {node: '>=6.9.1'}
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -1716,6 +1723,10 @@ packages:
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
+
+  engine-blackjack-ts@0.9.11:
+    resolution: {integrity: sha512-k/CHjbTiZrUdawA4DMdqXypvfLKa+d5NmTi83gjKdwOGMNektZfObFCkVZS6Y8A4IChdEI1OktWNSo3+eRHF3Q==}
+    engines: {node: '>=6.9.1'}
 
   enhanced-resolve@5.19.0:
     resolution: {integrity: sha512-phv3E1Xl4tQOShqSte26C7Fl84EwUdZsyOuSSk9qtAGyyQs2s3jJzComh+Abf4g187lUUAvH+H26omrqia2aGg==}
@@ -3589,6 +3600,8 @@ packages:
 
 snapshots:
 
+  52-deck@1.1.0: {}
+
   '@babel/code-frame@7.29.0':
     dependencies:
       '@babel/helper-validator-identifier': 7.28.5
@@ -5093,6 +5106,10 @@ snapshots:
   emoji-regex@10.6.0: {}
 
   emoji-regex@8.0.0: {}
+
+  engine-blackjack-ts@0.9.11:
+    dependencies:
+      52-deck: 1.1.0
 
   enhanced-resolve@5.19.0:
     dependencies:

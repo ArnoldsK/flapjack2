@@ -6,6 +6,7 @@ export enum Unicode {
   Clubs = "\u2663",
   Hearts = "\u2665",
   Diamonds = "\u2666",
+  ZeroWidthSpace = "\u200B",
 }
 
 export const COLOR_ROLE_PREFIX = "color-";

@@ -1,4 +1,15 @@
-import { joinAsLines, stringToIntHash } from "./string";
+import { joinAsLines, stringToIntHash, ucFirst } from "./string";
+
+describe("ucFirst", () => {
+  it("capitalizes first character and lowercases the rest", () => {
+    expect(ucFirst("stand")).toBe("Stand");
+    expect(ucFirst("HIT")).toBe("Hit");
+  });
+
+  it("returns empty string unchanged", () => {
+    expect(ucFirst("")).toBe("");
+  });
+});
 
 describe("joinAsLines", () => {
   it("joins non-null values with newlines", () => {

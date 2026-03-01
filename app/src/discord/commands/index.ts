@@ -1,4 +1,5 @@
 import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
+import bj from "@app/discord/commands/definitions/bj";
 import color from "@app/discord/commands/definitions/color";
 import credits from "@app/discord/commands/definitions/credits";
 import jb from "@app/discord/commands/definitions/jb";
@@ -15,6 +16,7 @@ const commandList: SlashCommandModule[] = [
   credits,
   color,
   jb,
+  bj,
   rank,
   rsLoot,
 ];
