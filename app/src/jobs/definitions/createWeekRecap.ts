@@ -249,7 +249,7 @@ const sendAnnouncement = async (ctx: AppContext): Promise<void> => {
 export default defineJob({
   id: "createWeekRecap",
 
-  schedule: "0 0 * * 1", // every Monday at midnight
+  schedule: "0 1 * * 1", // every Monday at 1:00 AM
 
   description: "Create week recap",
 
