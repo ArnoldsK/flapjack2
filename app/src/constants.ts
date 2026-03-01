@@ -12,3 +12,6 @@ export enum Color {
   Blue = 0x6495ed,
   Orange = 0xffa500,
 }
+
+/** 7 days in minutes; used for persistent thread auto-archive duration. */
+export const PERSISTENT_THREAD_ARCHIVE_DURATION = 10_080;
