@@ -47,18 +47,28 @@ export const deployCommands = async (
 
   let needsDeploy = remotes.some((r) => !localNames.has(r.name));
 
+  const jobCommandName = "job";
+
   for (const cmd of commands.values()) {
     const remote = remotes.find((r) => r.name === cmd.data.name);
     const remoteVersion = remote
       ? parseVersionFromDescription(remote.description)
       : 0;
-    if (remote && remoteVersion > cmd.version) {
-      throw new Error(
-        `Command "${cmd.data.name}": remote is v${remoteVersion}, local is v${cmd.version}. Refusing to overwrite with older version.`,
-      );
-    }
-    if (!remote || remoteVersion < cmd.version) {
-      needsDeploy = true;
+    const isJobCommand = cmd.data.name === jobCommandName;
+
+    if (isJobCommand) {
+      if (!remote || remoteVersion !== cmd.version) {
+        needsDeploy = true;
+      }
+    } else {
+      if (remote && remoteVersion > cmd.version) {
+        throw new Error(
+          `Command "${cmd.data.name}": remote is v${remoteVersion}, local is v${cmd.version}. Refusing to overwrite with older version.`,
+        );
+      }
+      if (!remote || remoteVersion < cmd.version) {
+        needsDeploy = true;
+      }
     }
   }
 

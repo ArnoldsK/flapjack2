@@ -4,9 +4,16 @@ import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import type { AppContext } from "@app/context";
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import { listJobIds, runById } from "@app/jobs";
+import { stringToIntHash } from "@app/utils/stringToIntHash";
+
+const jobCommandVersion = stringToIntHash(
+  listJobIds().slice().sort().join(","),
+  1,
+  999_999,
+);
 
 export default defineCommand({
-  version: 1,
+  version: jobCommandVersion,
 
   data: new SlashCommandBuilder()
     .setName("job")
