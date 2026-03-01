@@ -2,16 +2,82 @@ import { createCanvas, DOMMatrix } from "@napi-rs/canvas";
 import { AttachmentBuilder } from "discord.js";
 import GIFEncoder from "gif-encoder-2";
 
-import { Unicode } from "@app/constants";
 import { canvasFont } from "@app/modules/canvas/utils/font";
 import type { JbCard } from "@app/utils/jacksbetter";
 
-const CARD_SUIT = new Map<JbCard["suit"], string>([
-  ["spades", Unicode.Spades],
-  ["clubs", Unicode.Clubs],
-  ["hearts", Unicode.Hearts],
-  ["diamonds", Unicode.Diamonds],
-]);
+type Ctx2D = ReturnType<ReturnType<typeof createCanvas>["getContext"]>;
+
+/**
+ * Draw a suit glyph as vector paths (font-independent).
+ * The suit is drawn in a [0,1]×[0,1] unit box, then translated so its
+ * top-left corner sits at (x, y) and scaled by `size`.
+ */
+const drawSuit = (
+  ctx: Ctx2D,
+  suit: JbCard["suit"],
+  x: number,
+  y: number,
+  size: number,
+): void => {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(size, size);
+
+  ctx.beginPath();
+  switch (suit) {
+    case "diamonds":
+      ctx.moveTo(0.5, 0);
+      ctx.lineTo(1, 0.5);
+      ctx.lineTo(0.5, 1);
+      ctx.lineTo(0, 0.5);
+      break;
+
+    case "hearts":
+      ctx.moveTo(0.5, 0.3);
+      ctx.arc(0.25, 0.3, 0.25, 0, Math.PI, true);
+      ctx.lineTo(0.5, 1);
+      ctx.lineTo(1, 0.3);
+      ctx.arc(0.75, 0.3, 0.25, 0, Math.PI, true);
+      break;
+
+    case "spades": {
+      ctx.moveTo(0.5, 0.6);
+      ctx.arc(0.25, 0.6, 0.25, 0, Math.PI, false);
+      ctx.lineTo(0.5, 0);
+      ctx.lineTo(1, 0.6);
+      ctx.arc(0.75, 0.6, 0.25, 0, Math.PI, false);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0.46, 0.55);
+      ctx.lineTo(0.425, 1);
+      ctx.lineTo(0.575, 1);
+      ctx.lineTo(0.54, 0.55);
+      ctx.closePath();
+      break;
+    }
+
+    case "clubs": {
+      const r = 0.22;
+      ctx.arc(0.5, r, r, 0, Math.PI * 2);
+      ctx.moveTo(0.28 + r, 0.52);
+      ctx.arc(0.28, 0.52, r, 0, Math.PI * 2);
+      ctx.moveTo(0.72 + r, 0.52);
+      ctx.arc(0.72, 0.52, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0.455, 0.48);
+      ctx.lineTo(0.43, 1);
+      ctx.lineTo(0.57, 1);
+      ctx.lineTo(0.545, 0.48);
+      break;
+    }
+  }
+  ctx.closePath();
+
+  ctx.fill();
+  ctx.restore();
+};
 
 export interface CardsAttachmentInput {
   cards: Pick<JbCard, "suit" | "value" | "isHeld">[];
@@ -41,7 +107,7 @@ export const getCardsAttachment = ({
   const encoder = new GIFEncoder(width, height, "octree");
   encoder.start();
   encoder.setRepeat(-1);
-  encoder.setDelay(20);
+  encoder.setDelay(40);
   encoder.setQuality(10);
   encoder.setTransparent(0x00_00_00);
 
@@ -90,20 +156,13 @@ export const getCardsAttachment = ({
       ctx.letterSpacing = `${-valueSize * 0.2}px`;
       ctx.fillText(card.value, cardX + cardPadding, cardY + cardPadding);
 
-      const suitSize = cardHeight * 0.5;
-      ctx.font = canvasFont(suitSize, { family: "" });
-      const suit = CARD_SUIT.get(card.suit)!;
-      const suitMetrics = ctx.measureText(suit);
-      ctx.fillText(
-        suit,
-        cardX +
-          cardWidth -
-          cardPadding -
-          (suitMetrics.actualBoundingBoxRight ?? suitMetrics.width),
-        cardY +
-          cardHeight -
-          cardPadding -
-          (suitMetrics.actualBoundingBoxDescent ?? 0),
+      const suitSize = cardHeight * 0.4;
+      drawSuit(
+        ctx,
+        card.suit,
+        cardX + cardWidth - cardPadding - suitSize,
+        cardY + cardHeight - cardPadding - suitSize,
+        suitSize,
       );
 
       ctx.restore();
