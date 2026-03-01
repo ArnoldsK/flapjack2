@@ -2,14 +2,15 @@ import { createCanvas, DOMMatrix } from "@napi-rs/canvas";
 import { AttachmentBuilder } from "discord.js";
 import GIFEncoder from "gif-encoder-2";
 
+import { Unicode } from "@app/constants";
 import { canvasFont } from "@app/modules/canvas/utils/font";
 import type { JbCard } from "@app/utils/jacksbetter";
 
 const CARD_SUIT = new Map<JbCard["suit"], string>([
-  ["spades", "\u2660"],
-  ["clubs", "\u2663"],
-  ["hearts", "\u2665"],
-  ["diamonds", "\u2666"],
+  ["spades", Unicode.Spades],
+  ["clubs", Unicode.Clubs],
+  ["hearts", Unicode.Hearts],
+  ["diamonds", Unicode.Diamonds],
 ]);
 
 export interface CardsAttachmentInput {
