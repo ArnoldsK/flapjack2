@@ -358,7 +358,7 @@ export const RecapPage: FC = () => {
         : null;
 
   return (
-    <div className="mx-auto min-w-0 max-w-[694px]">
+    <div className="mx-auto min-w-0 max-w-[1600px]">
       <h1 className="text-2xl font-bold text-white">Week recap</h1>
       {createdAt ? (
         <p className="mt-2 text-sm text-zinc-500">Generated {createdAt}</p>
