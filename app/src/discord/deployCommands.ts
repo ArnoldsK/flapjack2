@@ -97,5 +97,4 @@ export const removeGuildCommands = async (
     Routes.applicationGuildCommands(env.DISCORD_CLIENT_ID, guildId),
     { body: [] },
   );
-  console.log("Removed all guild commands.");
 };

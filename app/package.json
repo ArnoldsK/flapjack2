@@ -26,6 +26,8 @@
     "@napi-rs/canvas": "^0.1.56",
     "chroma-js": "^3.0.0",
     "get-image-colors": "^4.0.1",
+    "gif-encoder-2": "^1.0.5",
+    "pokersolver": "^2.1.4",
     "@discordjs/rest": "^2.6.0",
     "@fastify/cors": "^11.2.0",
     "@trpc/server": "^11.10.0",

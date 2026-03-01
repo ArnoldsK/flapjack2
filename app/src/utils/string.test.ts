@@ -1,4 +1,18 @@
-import { stringToIntHash } from "./string";
+import { joinAsLines, stringToIntHash } from "./string";
+
+describe("joinAsLines", () => {
+  it("joins non-null values with newlines", () => {
+    expect(joinAsLines("a", "b", "c")).toBe("a\nb\nc");
+  });
+
+  it("filters out null and undefined", () => {
+    expect(joinAsLines("a", null, "b", undefined, "c")).toBe("a\nb\nc");
+  });
+
+  it("returns empty string when all values are nullish", () => {
+    expect(joinAsLines(null, undefined)).toBe("");
+  });
+});
 
 describe("stringToIntHash", () => {
   it("returns same value for same input and range", () => {

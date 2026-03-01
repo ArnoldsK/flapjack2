@@ -1,6 +1,7 @@
 import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
 import color from "@app/discord/commands/definitions/color";
 import credits from "@app/discord/commands/definitions/credits";
+import jb from "@app/discord/commands/definitions/jb";
 import job from "@app/discord/commands/definitions/job";
 import ping from "@app/discord/commands/definitions/ping";
 import rank from "@app/discord/commands/definitions/rank";
@@ -13,6 +14,7 @@ const commandList: SlashCommandModule[] = [
   remind,
   credits,
   color,
+  jb,
   rank,
   rsLoot,
 ];

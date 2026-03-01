@@ -2,6 +2,10 @@ export enum Unicode {
   Times = "\u00D7",
   ThinSpace = "\u2009",
   Middot = "\u00B7",
+  Spades = "\u2660",
+  Clubs = "\u2663",
+  Hearts = "\u2665",
+  Diamonds = "\u2666",
 }
 
 export const COLOR_ROLE_PREFIX = "color-";
