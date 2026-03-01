@@ -4,7 +4,7 @@ import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import type { AppContext } from "@app/context";
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import { listJobIds, runById } from "@app/jobs";
-import { stringToIntHash } from "@app/utils/stringToIntHash";
+import { stringToIntHash } from "@app/utils/string";
 
 const jobCommandVersion = stringToIntHash(
   listJobIds().slice().sort().join(","),

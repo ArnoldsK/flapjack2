@@ -7,6 +7,7 @@ import addExpAndCreditsOnMessage from "@app/discord/events/definitions/addExpAnd
 import adjustLinksInMessages from "@app/discord/events/definitions/adjustLinksInMessages";
 import handleVideoLinks from "@app/discord/events/definitions/handleVideoLinks";
 import interactionCreate from "@app/discord/events/definitions/interactionCreate";
+import logGuildMemberRemove from "@app/discord/events/definitions/logGuildMemberRemove";
 import ready from "@app/discord/events/definitions/ready";
 import upperClassMessage from "@app/discord/events/definitions/upperClassMessage";
 
@@ -17,6 +18,7 @@ const eventList: EventDefinition<keyof ClientEvents>[] = [
   addExpAndCreditsOnMessage as EventDefinition<keyof ClientEvents>,
   addChannelNewsRoles as EventDefinition<keyof ClientEvents>,
   handleVideoLinks as EventDefinition<keyof ClientEvents>,
+  logGuildMemberRemove as EventDefinition<keyof ClientEvents>,
   upperClassMessage as EventDefinition<keyof ClientEvents>,
 ];
 

@@ -11,7 +11,7 @@ import type { AppContext } from "@app/context";
 import { defineJob } from "@app/jobs/defineJob";
 import * as Hosting from "@app/modules/hosting";
 import * as StaticData from "@app/modules/staticData";
-import { isDiscordAttachmentUrl } from "@app/utils/isDiscordAttachmentUrl";
+import { isDiscordAttachmentUrl } from "@app/utils/discord";
 import type { WeekRecapMessage } from "@shared/types";
 
 const MIN_UNIQUE_REACTORS_FOR_RECAP = 5;

@@ -1,4 +1,4 @@
-import { stringToIntHash } from "./stringToIntHash";
+import { stringToIntHash } from "./string";
 
 describe("stringToIntHash", () => {
   it("returns same value for same input and range", () => {
