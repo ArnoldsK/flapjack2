@@ -1,5 +1,6 @@
 import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
 import bj from "@app/discord/commands/definitions/bj";
+import boosterIcon from "@app/discord/commands/definitions/boosterIcon";
 import color from "@app/discord/commands/definitions/color";
 import credits from "@app/discord/commands/definitions/credits";
 import jb from "@app/discord/commands/definitions/jb";
@@ -15,6 +16,7 @@ const commandList: SlashCommandModule[] = [
   remind,
   credits,
   color,
+  boosterIcon,
   jb,
   bj,
   rank,

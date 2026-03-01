@@ -10,6 +10,7 @@ export enum Unicode {
 }
 
 export const COLOR_ROLE_PREFIX = "color-";
+export const BOOSTER_ICON_ROLE_PREFIX = "booster-icon-";
 
 export enum Color {
   Black = 0x000001,

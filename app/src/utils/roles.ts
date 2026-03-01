@@ -2,7 +2,7 @@ import type { Guild, GuildMember, HexColorString, Role } from "discord.js";
 import type { RoleColorsResolvable } from "discord.js";
 import { type RoleCreateOptions } from "discord.js";
 
-import { COLOR_ROLE_PREFIX } from "@app/constants";
+import { BOOSTER_ICON_ROLE_PREFIX, COLOR_ROLE_PREFIX } from "@app/constants";
 
 /** Discord treats 0x000000 as NIL; use 0x000001 so the role keeps a color. */
 const DISCORD_COLOR_NIL = 0x000000;
@@ -98,6 +98,14 @@ export const getOrCreateRole = async (
 
 export const getMemberColorRole = (member: GuildMember): Role | undefined =>
   member.roles.cache.find((r) => r.name.startsWith(COLOR_ROLE_PREFIX));
+
+export const getMemberBoosterIconRole = (
+  member: GuildMember,
+): Role | undefined =>
+  member.roles.cache.find((r) => r.name.startsWith(BOOSTER_ICON_ROLE_PREFIX));
+
+export const getMemberBoosterIconRoleName = (member: GuildMember): string =>
+  `${BOOSTER_ICON_ROLE_PREFIX}${member.id.slice(0, 4)}`;
 
 /** Deletes the role if it has no members, to clean up the server roles list. */
 export const purgeRole = async (role: Role): Promise<void> => {
