@@ -6,6 +6,8 @@ export const applyUpperClassRole = async (
   ctx: AppContext,
   { userId, effective }: { userId: string; effective: bigint },
 ): Promise<void> => {
+  if (ctx.env.NODE_ENV !== "production") return;
+
   const member = ctx.guild().members.cache.get(userId);
   if (!member || member.user.bot) return;
 
