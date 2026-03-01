@@ -26,7 +26,7 @@ enum OptionName {
 const PREVIEW_URL = "https://pepsidog.lv/color";
 
 export default defineCommand({
-  version: 1,
+  version: 2,
 
   data: new SlashCommandBuilder()
     .setName("color")
@@ -54,6 +54,7 @@ export default defineCommand({
           opt
             .setName(OptionName.Hex1)
             .setDescription("First color in hex, e.g. #B492D4")
+            .setRequired(true)
             .setMinLength(6)
             .setMaxLength(7),
         )
@@ -61,6 +62,7 @@ export default defineCommand({
           opt
             .setName(OptionName.Hex2)
             .setDescription("Second color in hex, e.g. #D4B492")
+            .setRequired(true)
             .setMinLength(6)
             .setMaxLength(7),
         ),
@@ -148,26 +150,8 @@ const handleGradient = async (
     return;
   }
 
-  const input1 = interaction.options.getString(OptionName.Hex1);
-  const input2 = interaction.options.getString(OptionName.Hex2);
-
-  if (!input1 && !input2) {
-    await interaction.reply({
-      content: `You can preview and copy colors at ${PREVIEW_URL}`,
-      flags: MessageFlags.Ephemeral,
-    });
-
-    return;
-  }
-
-  if (!input1 || !input2) {
-    await interaction.reply({
-      content: "You need to provide both colors for a gradient.",
-      flags: MessageFlags.Ephemeral,
-    });
-
-    return;
-  }
+  const input1 = interaction.options.getString(OptionName.Hex1, true);
+  const input2 = interaction.options.getString(OptionName.Hex2, true);
 
   const hex1 = parseHexColor(input1);
   const hex2 = parseHexColor(input2);
