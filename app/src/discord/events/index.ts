@@ -10,6 +10,8 @@ import interactionCreate from "@app/discord/events/definitions/interactionCreate
 import logGuildMemberRemove from "@app/discord/events/definitions/logGuildMemberRemove";
 import ready from "@app/discord/events/definitions/ready";
 import upperClassMessage from "@app/discord/events/definitions/upperClassMessage";
+import userRoleMemberAdd from "@app/discord/events/definitions/userRoleMemberAdd";
+import userRoleMemberUpdate from "@app/discord/events/definitions/userRoleMemberUpdate";
 
 const eventList: EventDefinition<keyof ClientEvents>[] = [
   ready as EventDefinition<keyof ClientEvents>,
@@ -20,6 +22,8 @@ const eventList: EventDefinition<keyof ClientEvents>[] = [
   handleVideoLinks as EventDefinition<keyof ClientEvents>,
   logGuildMemberRemove as EventDefinition<keyof ClientEvents>,
   upperClassMessage as EventDefinition<keyof ClientEvents>,
+  userRoleMemberAdd as EventDefinition<keyof ClientEvents>,
+  userRoleMemberUpdate as EventDefinition<keyof ClientEvents>,
 ];
 
 function groupByEvent(

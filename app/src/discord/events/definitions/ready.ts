@@ -3,6 +3,7 @@ import { Events } from "discord.js";
 import { staticConfig } from "@app/config/static";
 import { Color } from "@app/constants";
 import { defineEvent } from "@app/discord/events/defineEvent";
+import * as UserRole from "@app/modules/userRole";
 import { getNewCommits } from "@app/utils/git";
 
 export default defineEvent({
@@ -19,6 +20,7 @@ export default defineEvent({
     if (ctx.env.NODE_ENV === "production") {
       // Prefetch all members to avoid rate limiting
       await ctx.guild().members.fetch();
+      await UserRole.utils.syncRolesFromGuild(ctx);
 
       // Send git commit log to logs channel
       const channel = ctx
