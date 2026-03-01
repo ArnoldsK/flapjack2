@@ -1,14 +1,7 @@
-import type { BaseGuildTextChannel } from "discord.js";
 import { codeBlock, MessageFlags, SlashCommandBuilder } from "discord.js";
 
-import { staticConfig } from "@app/config/static";
 import { defineCommand } from "@app/discord/commands/defineCommand";
-
-const hasWebhooks = (ch: {
-  id: string;
-  fetchWebhooks?: unknown;
-}): ch is BaseGuildTextChannel =>
-  ch.id === staticConfig.channels.runescape && "fetchWebhooks" in ch;
+import { isTextChannel } from "@app/utils/discord";
 
 export default defineCommand({
   version: 1,
@@ -19,7 +12,7 @@ export default defineCommand({
 
   execute: async (_ctx, interaction) => {
     const channel = interaction.channel;
-    if (!channel?.isTextBased() || !hasWebhooks(channel)) {
+    if (!isTextChannel(channel)) {
       await interaction.reply({
         content: "Not allowed in this channel.",
         flags: MessageFlags.Ephemeral,

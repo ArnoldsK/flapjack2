@@ -1,4 +1,16 @@
-import type { APIEmbedAuthor, GuildMember } from "discord.js";
+import type {
+  APIEmbedAuthor,
+  Channel,
+  GuildMember,
+  TextChannel,
+} from "discord.js";
+import { ChannelType } from "discord.js";
+
+export const isTextChannel = (
+  channel: Channel | null | undefined,
+): channel is TextChannel => {
+  return !!channel && channel.type === ChannelType.GuildText;
+};
 
 export const embedAuthor = (member: GuildMember): APIEmbedAuthor => ({
   name: member.displayName,

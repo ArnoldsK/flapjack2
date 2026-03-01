@@ -1,6 +1,7 @@
-import type { GuildMember } from "discord.js";
+import type { Channel, GuildMember } from "discord.js";
+import { ChannelType } from "discord.js";
 
-import { embedAuthor, isDiscordAttachmentUrl } from "./discord";
+import { embedAuthor, isDiscordAttachmentUrl, isTextChannel } from "./discord";
 
 const createMockMember = (
   overrides: Partial<{ displayName: string }> = {},
@@ -75,5 +76,24 @@ describe("isDiscordAttachmentUrl", () => {
 
   it("returns false for invalid URL string", () => {
     expect(isDiscordAttachmentUrl("not a url")).toBe(false);
+  });
+});
+
+describe("isTextChannel", () => {
+  it("returns true for GuildText channel", () => {
+    const ch = { type: ChannelType.GuildText } as Channel;
+
+    expect(isTextChannel(ch)).toBe(true);
+  });
+
+  it("returns false for null or undefined", () => {
+    expect(isTextChannel(null)).toBe(false);
+    expect(isTextChannel(undefined)).toBe(false);
+  });
+
+  it("returns false for non-GuildText channel type", () => {
+    const ch = { type: ChannelType.GuildVoice } as Channel;
+
+    expect(isTextChannel(ch)).toBe(false);
   });
 });

@@ -4,6 +4,7 @@ import { staticConfig } from "@app/config/static";
 import { Color } from "@app/constants";
 import { defineEvent } from "@app/discord/events/defineEvent";
 import * as UserRole from "@app/modules/userRole";
+import { isTextChannel } from "@app/utils/discord";
 import { getNewCommits } from "@app/utils/git";
 
 export default defineEvent({
@@ -26,7 +27,7 @@ export default defineEvent({
       const channel = ctx
         .guild()
         .channels.cache.get(staticConfig.channels.logs);
-      if (!channel || !channel.isTextBased()) {
+      if (!isTextChannel(channel)) {
         return;
       }
 

@@ -11,7 +11,7 @@ import type { AppContext } from "@app/context";
 import { defineJob } from "@app/jobs/defineJob";
 import * as Hosting from "@app/modules/hosting";
 import * as StaticData from "@app/modules/staticData";
-import { isDiscordAttachmentUrl } from "@app/utils/discord";
+import { isDiscordAttachmentUrl, isTextChannel } from "@app/utils/discord";
 import type { WeekRecapMessage } from "@shared/types";
 
 const MIN_UNIQUE_REACTORS_FOR_RECAP = 5;
@@ -119,7 +119,7 @@ const parseRecapMessage = async (
   if (!guild) throw new Error("Guild is not defined");
 
   const channel = message.channel;
-  if (!channel.isTextBased() || channel.type !== ChannelType.GuildText) {
+  if (!isTextChannel(channel)) {
     throw new Error("Channel is not a text channel");
   }
 

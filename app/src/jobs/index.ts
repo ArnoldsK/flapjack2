@@ -4,8 +4,9 @@ import type { AppContext } from "@app/context";
 import type { JobDefinition } from "@app/jobs/defineJob";
 import createWeekRecap from "@app/jobs/definitions/createWeekRecap";
 import endReminders from "@app/jobs/definitions/endReminders";
+import resetCredits from "@app/jobs/definitions/resetCredits";
 
-const registry: JobDefinition[] = [endReminders, createWeekRecap];
+const registry: JobDefinition[] = [endReminders, createWeekRecap, resetCredits];
 
 export const runById = async (
   ctx: AppContext,

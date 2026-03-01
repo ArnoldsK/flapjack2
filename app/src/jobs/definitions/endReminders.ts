@@ -1,5 +1,6 @@
 import { defineJob } from "@app/jobs/defineJob";
 import * as Reminder from "@app/modules/reminder";
+import { isTextChannel } from "@app/utils/discord";
 
 export default defineJob({
   id: "endReminders",
@@ -21,7 +22,7 @@ export default defineJob({
 
     for (const reminder of reminders) {
       const channel = guild.channels.cache.get(reminder.channel_id);
-      if (!channel || !channel.isTextBased()) {
+      if (!isTextChannel(channel)) {
         continue;
       }
 
