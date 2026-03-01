@@ -28,10 +28,6 @@ const isCasinoChannel = (channelId: string | null): boolean =>
 const replyFlags = (channelId: string | null) =>
   isCasinoChannel(channelId) ? undefined : MessageFlags.Ephemeral;
 
-const effectiveCredits = (row: Credits.db.Table | null): bigint =>
-  (row != null ? BigInt(row.credits) : 0n) *
-  BigInt(row != null ? Number(row.multiplier) : 1);
-
 const SUIT_SYMBOL: Record<JbCard["suit"], string> = {
   spades: Unicode.Spades,
   clubs: Unicode.Clubs,
@@ -97,7 +93,7 @@ export default defineCommand({
     activeJbUsers.add(userId);
 
     const creditsRow = await Credits.getByUserId(ctx, userId);
-    const maxBet = Number(effectiveCredits(creditsRow));
+    const maxBet = Number(Credits.utils.effectiveCredits(creditsRow));
 
     let amount: number;
     try {
@@ -181,7 +177,7 @@ export default defineCommand({
         byAmount: result.winAmount,
         lastMessageAt: undefined,
       });
-      const newCredits = effectiveCredits(newRow);
+      const newCredits = Credits.utils.effectiveCredits(newRow);
 
       const drawMember = (selectInteraction.member ?? null) as MemberLike;
       await selectInteraction.update(
@@ -189,7 +185,7 @@ export default defineCommand({
       );
     } catch {
       const newRow = await Credits.getByUserId(ctx, userId);
-      const walletCredits = effectiveCredits(newRow);
+      const walletCredits = Credits.utils.effectiveCredits(newRow);
       const editMember = (interaction.member ?? null) as MemberLike;
       await interaction.editReply(
         getTimedOutReply(amount, walletCredits, editMember),

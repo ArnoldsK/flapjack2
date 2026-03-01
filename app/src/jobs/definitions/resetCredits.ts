@@ -4,10 +4,6 @@ import { defineJob } from "@app/jobs/defineJob";
 import * as Credits from "@app/modules/credits";
 import { isTextChannel } from "@app/utils/discord";
 
-const effectiveCredits = (row: Credits.db.Table | null): bigint =>
-  (row != null ? BigInt(row.credits) : 0n) *
-  BigInt(row != null ? Number(row.multiplier) : 1);
-
 const RESET_CREDITS_CHANNEL_IDS = [
   staticConfig.channels.casino,
   staticConfig.channels.logs,
@@ -24,7 +20,7 @@ export default defineJob({
 
     const botRow = await Credits.getByUserId(ctx, botUser.id);
     const botCredits = Credits.utils.formatCredits(
-      Number(effectiveCredits(botRow)),
+      Number(Credits.utils.effectiveCredits(botRow)),
     );
 
     await Credits.deleteAll(ctx);
