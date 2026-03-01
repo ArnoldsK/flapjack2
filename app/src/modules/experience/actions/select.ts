@@ -12,3 +12,14 @@ export const getByUserId = async (
 
   return row ?? null;
 };
+
+export const getAllOrderedByExpDesc = async (
+  ctx: AppContext,
+): Promise<Experience.db.Table[]> => {
+  const rows = await ctx
+    .db<Experience.db.Table>(Experience.db.TableName)
+    .select("*")
+    .orderBy("exp", "desc");
+
+  return rows;
+};

@@ -1,6 +1,7 @@
 export enum Unicode {
   Times = "\u00D7",
   ThinSpace = "\u2009",
+  Middot = "\u00B7",
 }
 
 export const COLOR_ROLE_PREFIX = "color-";
