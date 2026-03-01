@@ -1,10 +1,11 @@
 import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
+import color from "@app/discord/commands/definitions/color";
 import credits from "@app/discord/commands/definitions/credits";
 import job from "@app/discord/commands/definitions/job";
 import ping from "@app/discord/commands/definitions/ping";
 import remind from "@app/discord/commands/definitions/remind";
 
-const commandList: SlashCommandModule[] = [ping, job, remind, credits];
+const commandList: SlashCommandModule[] = [ping, job, remind, credits, color];
 
 export const commands = new Map<string, SlashCommandModule>(
   commandList.map((cmd) => [cmd.data.name, cmd]),

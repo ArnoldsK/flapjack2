@@ -3,6 +3,8 @@ export enum Unicode {
   ThinSpace = "\u2009",
 }
 
+export const COLOR_ROLE_PREFIX = "color-";
+
 export enum Color {
   Black = 0x000001,
   Red = 0xf04747,

@@ -1,6 +1,8 @@
-import type { Guild, Role } from "discord.js";
+import type { Guild, GuildMember, HexColorString, Role } from "discord.js";
 import type { RoleColorsResolvable } from "discord.js";
 import { type RoleCreateOptions } from "discord.js";
+
+import { COLOR_ROLE_PREFIX } from "@app/constants";
 
 /** Discord treats 0x000000 as NIL; use 0x000001 so the role keeps a color. */
 const DISCORD_COLOR_NIL = 0x000000;
@@ -90,6 +92,45 @@ export const getOrCreateRole = async (
       colors: parseRoleColors(colors),
     });
   }
+
+  return role;
+};
+
+export const getMemberColorRole = (member: GuildMember): Role | undefined =>
+  member.roles.cache.find((r) => r.name.startsWith(COLOR_ROLE_PREFIX));
+
+/** Deletes the role if it has no members, to clean up the server roles list. */
+export const purgeRole = async (role: Role): Promise<void> => {
+  if (role.members.size > 0) return;
+  await role.delete();
+};
+
+const parseColorRoleName = (color: HexColorString): string =>
+  color.replace("#", "").replace("000000", "000001").toUpperCase();
+
+export const setMemberColorRole = async (
+  member: GuildMember,
+  [color1, color2]: [HexColorString, HexColorString | null],
+): Promise<Role> => {
+  const oldRole = getMemberColorRole(member);
+  if (oldRole) {
+    await member.roles.remove(oldRole);
+    await purgeRole(oldRole);
+  }
+
+  const name =
+    COLOR_ROLE_PREFIX +
+    parseColorRoleName(color1) +
+    (color2 ? `-${parseColorRoleName(color2)}` : "");
+
+  const role = await getOrCreateRole(member.guild, {
+    name,
+    colors: {
+      primaryColor: color1,
+      secondaryColor: color2 ?? undefined,
+    },
+  });
+  await member.roles.add(role);
 
   return role;
 };

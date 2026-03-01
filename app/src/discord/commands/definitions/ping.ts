@@ -12,7 +12,7 @@ export default defineCommand({
   execute: async (_ctx, interaction) => {
     await interaction.reply({
       content: "Pong!",
-      flags: [MessageFlags.Ephemeral],
+      flags: MessageFlags.Ephemeral,
     });
   },
 });
