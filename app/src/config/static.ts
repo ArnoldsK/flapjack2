@@ -28,10 +28,15 @@ const channels = {
   games: "441322984410578954",
 };
 
+const categories = {
+  archive: "525995353821151242",
+};
+
 export const staticConfig = {
   guildId: "411593263615836172",
   ownerUserId: "221755442513051649",
   channels,
+  categories,
   roles: {
     activeMember: "669608043713003521",
     upperClass: "1159244242074468503",
