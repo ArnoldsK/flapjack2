@@ -122,7 +122,14 @@ const handleView = async (
     return;
   }
 
-  const row = await Credits.getByUserId(ctx, targetUser.id);
+  const currentRow = await Credits.getByUserId(ctx, targetUser.id);
+  const now = new Date();
+  const creditsAmount = Credits.utils.getMessageCreditsAmount(currentRow, now);
+  const row = await Credits.utils.modifyForUser(ctx, {
+    userId: targetUser.id,
+    byAmount: creditsAmount,
+    lastMessageAt: now,
+  });
   const eff = effective(row);
   const isSelf = targetUser.id === interaction.user.id;
   const intro = isSelf ? "You have" : `${member.displayName} has`;
@@ -143,6 +150,20 @@ const handleTop = async (
   interaction: ChatInputCommandInteraction,
 ): Promise<void> => {
   const guild = ctx.guild();
+  const callerId = interaction.user.id;
+  const now = new Date();
+  const currentCallerRow = await Credits.getByUserId(ctx, callerId);
+  const creditsAmount = Credits.utils.getMessageCreditsAmount(
+    currentCallerRow,
+    now,
+  );
+
+  await Credits.utils.modifyForUser(ctx, {
+    userId: callerId,
+    byAmount: creditsAmount,
+    lastMessageAt: now,
+  });
+
   const rows = await Credits.getAll(ctx);
 
   const withEffective = rows
