@@ -232,7 +232,7 @@ const sendAnnouncement = async (ctx: AppContext): Promise<void> => {
     return;
   }
 
-  const content = `New weekly recap at https://pepsidog.lv/recap`;
+  const content = `New weekly recap at <https://pepsidog.lv/recap>`;
 
   const messages = await channel.messages.fetch({ limit: 20 });
   const previous = messages.find(
