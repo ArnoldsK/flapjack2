@@ -15,6 +15,7 @@ import { Unicode } from "@app/constants";
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import * as Credits from "@app/modules/credits";
 import { getGameOutcomeText } from "@app/utils/blackjack";
+import { isInteractionCollectorError } from "@app/utils/discord";
 import { joinAsLines, ucFirst } from "@app/utils/string";
 
 const BJ_TIMEOUT_MS = 5 * 60_000;
@@ -135,7 +136,6 @@ export default defineCommand({
       await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: -amount,
-        lastMessageAt: undefined,
       });
     } catch {
       activeBjUsers.delete(userId);
@@ -192,7 +192,6 @@ export default defineCommand({
       await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: amount,
-        lastMessageAt: undefined,
       });
 
       throw replyErr;
@@ -211,15 +210,31 @@ export default defineCommand({
         interaction,
         member,
       );
-    } catch {
-      const walletRow = await Credits.getByUserId(ctx, userId);
+    } catch (err) {
       const state = game.getState();
       const lostAmount = state.finalBet || state.initialBet;
       const editMember = (interaction.member ?? null) as MemberLike;
 
-      await interaction
-        .editReply(getTimeoutReply(lostAmount, walletRow, editMember))
-        .catch(() => {});
+      try {
+        if (isInteractionCollectorError(err)) {
+          const walletRow = await Credits.getByUserId(ctx, userId);
+
+          await interaction.editReply(
+            getTimeoutReply(lostAmount, walletRow, editMember),
+          );
+        } else {
+          const newRow = await Credits.utils.modifyForUser(ctx, {
+            userId,
+            byAmount: lostAmount,
+          });
+
+          await interaction.editReply(
+            getErrorRefundReply(lostAmount, newRow, editMember),
+          );
+        }
+      } catch {
+        // Ignore follow-up edit errors
+      }
     } finally {
       activeBjUsers.delete(userId);
     }
@@ -340,7 +355,6 @@ const handleGameOver = async (
   const newRow = await Credits.utils.modifyForUser(ctx, {
     userId,
     byAmount: wonAmount,
-    lastMessageAt: undefined,
   });
   const walletCredits = Credits.utils.effectiveCredits(newRow);
   const state = game.getState();
@@ -414,7 +428,6 @@ const handleAwaitResponse = async (
     await Credits.utils.modifyForUser(ctx, {
       userId,
       byAmount: -state.initialBet,
-      lastMessageAt: undefined,
     });
   }
 
@@ -470,6 +483,32 @@ const getTimeoutReply = (
         ...(color != null && { color }),
         description: joinAsLines(
           `**No action within 5 minutes, you lost ${Credits.utils.formatCredits(lostAmount)}**`,
+          `You have ${Credits.utils.formatCredits(walletCredits)} now`,
+        ),
+      },
+    ],
+    components: [],
+  };
+};
+
+const getErrorRefundReply = (
+  refundAmount: number,
+  walletRow: Credits.db.Table,
+  member: MemberLike,
+): {
+  embeds: APIEmbed[];
+  components: [];
+} => {
+  const walletCredits = Credits.utils.effectiveCredits(walletRow);
+  const color =
+    member && "displayColor" in member ? member.displayColor : undefined;
+
+  return {
+    embeds: [
+      {
+        ...(color != null && { color }),
+        description: joinAsLines(
+          `**An error has occurred, you get back ${Credits.utils.formatCredits(refundAmount)}**`,
           `You have ${Credits.utils.formatCredits(walletCredits)} now`,
         ),
       },

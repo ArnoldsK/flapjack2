@@ -32,7 +32,6 @@ export default defineEvent({
     await Credits.utils.modifyForUser(ctx, {
       userId: message.member.id,
       byAmount: -Number(UPPER_CLASS_MESSAGE_CREDITS),
-      lastMessageAt: undefined,
     });
   },
 });

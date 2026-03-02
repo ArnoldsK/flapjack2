@@ -1,7 +1,12 @@
 import type { Channel, GuildMember } from "discord.js";
 import { ChannelType } from "discord.js";
 
-import { embedAuthor, isDiscordAttachmentUrl, isTextChannel } from "./discord";
+import {
+  embedAuthor,
+  isDiscordAttachmentUrl,
+  isInteractionCollectorError,
+  isTextChannel,
+} from "./discord";
 
 const createMockMember = (
   overrides: Partial<{ displayName: string }> = {},
@@ -95,5 +100,29 @@ describe("isTextChannel", () => {
     const ch = { type: ChannelType.GuildVoice } as Channel;
 
     expect(isTextChannel(ch)).toBe(false);
+  });
+});
+
+describe("isInteractionCollectorError", () => {
+  it("returns true for Error with InteractionCollectorError in name", () => {
+    const err = new Error("some message");
+    err.name = "InteractionCollectorError";
+
+    expect(isInteractionCollectorError(err)).toBe(true);
+  });
+
+  it("returns false for non-Error values", () => {
+    expect(isInteractionCollectorError("not an error")).toBe(false);
+    expect(isInteractionCollectorError(null)).toBe(false);
+    expect(
+      isInteractionCollectorError({ name: "InteractionCollectorError" }),
+    ).toBe(false);
+  });
+
+  it("returns false when Error name does not include InteractionCollectorError", () => {
+    const err = new Error("some message");
+    err.name = "OtherError";
+
+    expect(isInteractionCollectorError(err)).toBe(false);
   });
 });

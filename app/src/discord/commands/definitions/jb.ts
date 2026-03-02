@@ -13,6 +13,7 @@ import { Unicode } from "@app/constants";
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import { getCardsAttachment } from "@app/modules/canvas/actions/cardsAttachment";
 import * as Credits from "@app/modules/credits";
+import { isInteractionCollectorError } from "@app/utils/discord";
 import type { JbCard, JbDrawResult } from "@app/utils/jacksbetter";
 import { JacksBetter } from "@app/utils/jacksbetter";
 import { joinAsLines } from "@app/utils/string";
@@ -108,7 +109,6 @@ export default defineCommand({
       await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: -amount,
-        lastMessageAt: undefined,
       });
     } catch {
       activeJbUsers.delete(userId);
@@ -148,7 +148,6 @@ export default defineCommand({
       await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: amount,
-        lastMessageAt: undefined,
       });
 
       throw err;
@@ -174,7 +173,6 @@ export default defineCommand({
       const newRow = await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: result.winAmount,
-        lastMessageAt: undefined,
       });
       const newCredits = Credits.utils.effectiveCredits(newRow);
 
@@ -182,13 +180,27 @@ export default defineCommand({
       await selectInteraction.update(
         getDrawReply(result, newCredits, drawMember),
       );
-    } catch {
-      const newRow = await Credits.getByUserId(ctx, userId);
-      const walletCredits = Credits.utils.effectiveCredits(newRow);
+    } catch (err) {
       const editMember = (interaction.member ?? null) as MemberLike;
-      await interaction.editReply(
-        getTimedOutReply(amount, walletCredits, editMember),
-      );
+
+      if (isInteractionCollectorError(err)) {
+        const newRow = await Credits.getByUserId(ctx, userId);
+        const walletCredits = Credits.utils.effectiveCredits(newRow);
+
+        await interaction.editReply(
+          getTimedOutReply(amount, walletCredits, editMember),
+        );
+      } else {
+        const refundRow = await Credits.utils.modifyForUser(ctx, {
+          userId,
+          byAmount: amount,
+        });
+        const walletCredits = Credits.utils.effectiveCredits(refundRow);
+
+        await interaction.editReply(
+          getErrorReply(amount, walletCredits, editMember),
+        );
+      }
     } finally {
       activeJbUsers.delete(userId);
     }
@@ -286,6 +298,27 @@ const getTimedOutReply = (
     buildContainerEmbeds(member, {
       descriptionLines: [
         `**No action within 5 minutes, you lost ${Credits.utils.formatCredits(bet)}**`,
+        `You have ${Credits.utils.formatCredits(walletCredits)} now.`,
+      ],
+    }),
+  ],
+  components: [],
+  files: [],
+});
+
+const getErrorReply = (
+  bet: number,
+  walletCredits: bigint,
+  member: MemberLike,
+): {
+  embeds: APIEmbed[];
+  components: [];
+  files: [];
+} => ({
+  embeds: [
+    buildContainerEmbeds(member, {
+      descriptionLines: [
+        `**An error has occurred, you get back ${Credits.utils.formatCredits(bet)}**`,
         `You have ${Credits.utils.formatCredits(walletCredits)} now.`,
       ],
     }),

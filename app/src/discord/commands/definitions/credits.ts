@@ -258,12 +258,10 @@ const handleGive = async (
   await Credits.utils.modifyForUser(ctx, {
     userId: senderId,
     byAmount: -amount,
-    lastMessageAt: undefined,
   });
   await Credits.utils.modifyForUser(ctx, {
     userId: targetUser.id,
     byAmount: amount,
-    lastMessageAt: undefined,
   });
 
   await interaction.reply({
@@ -309,7 +307,6 @@ const handleAdjust = async (
   await Credits.utils.modifyForUser(ctx, {
     userId: targetUser.id,
     byAmount: delta,
-    lastMessageAt: undefined,
   });
 
   await interaction.reply({

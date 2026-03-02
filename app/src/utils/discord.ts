@@ -34,3 +34,9 @@ export const isDiscordAttachmentUrl = (value: string): boolean => {
     return false;
   }
 };
+
+export const isInteractionCollectorError = (error: unknown): error is Error => {
+  return (
+    error instanceof Error && error.name.includes("InteractionCollectorError")
+  );
+};
