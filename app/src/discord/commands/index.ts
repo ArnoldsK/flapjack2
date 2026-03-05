@@ -2,6 +2,7 @@ import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
 import archive from "@app/discord/commands/definitions/archive";
 import bj from "@app/discord/commands/definitions/bj";
 import boosterIcon from "@app/discord/commands/definitions/boosterIcon";
+import coinflip from "@app/discord/commands/definitions/coinflip";
 import color from "@app/discord/commands/definitions/color";
 import credits from "@app/discord/commands/definitions/credits";
 import jb from "@app/discord/commands/definitions/jb";
@@ -23,6 +24,7 @@ const commandList: SlashCommandModule[] = [
   bj,
   rank,
   rsLoot,
+  coinflip,
 ];
 
 export const commands = new Map<string, SlashCommandModule>(
