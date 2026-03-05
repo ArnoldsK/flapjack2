@@ -5,8 +5,14 @@ import type { JobDefinition } from "@app/jobs/defineJob";
 import createWeekRecap from "@app/jobs/definitions/createWeekRecap";
 import endReminders from "@app/jobs/definitions/endReminders";
 import resetCredits from "@app/jobs/definitions/resetCredits";
+import resetPoeScarabsStaticData from "@app/jobs/definitions/resetPoeScarabsStaticData";
 
-const registry: JobDefinition[] = [endReminders, createWeekRecap, resetCredits];
+const registry: JobDefinition[] = [
+  endReminders,
+  createWeekRecap,
+  resetCredits,
+  resetPoeScarabsStaticData,
+];
 
 export const runById = async (
   ctx: AppContext,

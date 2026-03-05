@@ -1,4 +1,4 @@
-import { clamp, range } from "./number";
+import { clamp, formatScarabPrice, range } from "./number";
 
 describe("clamp", () => {
   it("returns value when within min and max", () => {
@@ -41,5 +41,20 @@ describe("range", () => {
   it("clamps when value is outside [minA, maxA]", () => {
     expect(range(-10, 0, 100, 0, 10)).toBe(0);
     expect(range(150, 0, 100, 0, 10)).toBe(10);
+  });
+});
+
+describe("formatScarabPrice", () => {
+  it("returns integer chaos for value >= 1", () => {
+    expect(formatScarabPrice(1)).toBe("1c");
+    expect(formatScarabPrice(2)).toBe("2c");
+    expect(formatScarabPrice(10.7)).toBe("10c");
+  });
+
+  it("returns simplified fraction for value < 1", () => {
+    expect(formatScarabPrice(0.5)).toBe("1c/2");
+    expect(formatScarabPrice(0.25)).toBe("3c/10");
+    expect(formatScarabPrice(0.1)).toBe("1c/10");
+    expect(formatScarabPrice(0.75)).toBe("4c/5"); // 0.75 * 10 rounded = 8/10
   });
 });

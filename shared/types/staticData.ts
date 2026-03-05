@@ -1,4 +1,6 @@
-export type StaticDataType = "weekRecap";
+import type { PoeScarabData } from "./poe";
+
+export type StaticDataType = "weekRecap" | "poeScarabs";
 
 export interface WeekRecapMessage {
   id: string;
@@ -32,4 +34,5 @@ export interface WeekRecapData {
 
 export type StaticData = {
   weekRecap: WeekRecapData;
+  poeScarabs: PoeScarabData;
 };
