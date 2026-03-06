@@ -32,7 +32,7 @@ export default defineJob({
   schedule: "0 * * * *", // every hour at the 0th minute
 
   description:
-    "Scrapes fuel prices from Virsi, Neste, CircleK and aggregates by fuel type (average).",
+    "Scrapes fuel prices from Virsi, Neste, CircleK and aggregates by fuel type (lowest price).",
 
   productionOnly: true,
 
@@ -83,22 +83,25 @@ export default defineJob({
 
     const byType = new Map<
       FuelType,
-      { prices: number[]; stationNames: string[] }
+      Array<{ price: number; stationName: string }>
     >();
     for (const { type, price, stationName } of entriesWithStation) {
       const cur = byType.get(type);
       if (!cur) {
-        byType.set(type, { prices: [price], stationNames: [stationName] });
+        byType.set(type, [{ price, stationName }]);
       } else {
-        cur.prices.push(price);
-        cur.stationNames.push(stationName);
+        cur.push({ price, stationName });
       }
     }
 
-    for (const [fuelType, { prices, stationNames }] of byType) {
-      const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
-      const priceRounded = Number(avg.toFixed(3));
-      const uniqueStations = [...new Set(stationNames)];
+    for (const [fuelType, entries] of byType) {
+      const minPrice = Math.min(...entries.map((e) => e.price));
+      const priceRounded = Number(minPrice.toFixed(3));
+      const uniqueStations = [
+        ...new Set(
+          entries.filter((e) => e.price === minPrice).map((e) => e.stationName),
+        ),
+      ];
 
       await FuelPrice.upsertIfChanged(ctx, {
         fuel_type: fuelType,
