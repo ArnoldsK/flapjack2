@@ -97,11 +97,12 @@ export default defineJob({
 
     for (const [fuelType, { prices, stationNames }] of byType) {
       const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+      const priceRounded = Number(avg.toFixed(3));
       const uniqueStations = [...new Set(stationNames)];
 
       await FuelPrice.upsertIfChanged(ctx, {
         fuel_type: fuelType,
-        price: avg,
+        price: priceRounded,
         station_names: uniqueStations,
       });
     }

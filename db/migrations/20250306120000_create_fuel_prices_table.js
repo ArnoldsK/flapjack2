@@ -5,7 +5,7 @@ exports.up = async (knex) => {
 
   await knex.schema.createTable("fuel_prices", (table) => {
     table.string("fuel_type", 32).primary();
-    table.decimal("price", 10, 4).notNullable();
+    table.decimal("price", 10, 3).notNullable();
     table.json("station_names").notNullable();
     table.timestamp("updated_at").notNullable().defaultTo(knex.fn.now());
   });
