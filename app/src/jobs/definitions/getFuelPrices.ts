@@ -1,8 +1,11 @@
 import * as cheerio from "cheerio";
 
+import { staticConfig } from "@app/config/static";
 import { defineJob } from "@app/jobs/defineJob";
+import * as Canvas from "@app/modules/canvas";
 import type { FuelType } from "@app/modules/fuelPrice";
 import * as FuelPrice from "@app/modules/fuelPrice";
+import { isTextChannel } from "@app/utils/discord";
 import { checkUnreachable } from "@shared/utils/error";
 
 interface SiteFuelEntry {
@@ -95,6 +98,13 @@ export default defineJob({
       }
     }
 
+    const existingRows = await FuelPrice.getLatest(ctx);
+    const existingByType = new Map(
+      existingRows.map((row) => [row.fuel_type, row]),
+    );
+
+    let hasChanges = false;
+
     for (const [fuelType, entries] of byType) {
       const minPrice = Math.min(...entries.map((e) => e.price));
       const priceRounded = Number(minPrice.toFixed(3));
@@ -104,10 +114,35 @@ export default defineJob({
         ),
       ];
 
+      const existing = existingByType.get(fuelType);
+      if (
+        existing &&
+        Number(existing.price) === priceRounded &&
+        JSON.stringify(existing.station_names) ===
+          JSON.stringify(uniqueStations)
+      ) {
+        continue;
+      }
+
       await FuelPrice.insert(ctx, {
         fuel_type: fuelType,
         price: priceRounded,
         station_names: uniqueStations,
+      });
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      const channel = ctx.client.channels.cache.get(staticConfig.channels.auto);
+      if (!isTextChannel(channel)) return;
+
+      const currentRows = await FuelPrice.getLatest(ctx);
+      const previousRows = await FuelPrice.getPreviousBatch(ctx, currentRows);
+      const cards = FuelPrice.utils.buildCards(currentRows, previousRows);
+      const imageBuffer = Canvas.getFuelPricesImage(cards);
+
+      await channel.send({
+        files: [{ attachment: imageBuffer, name: "fuel-prices.png" }],
       });
     }
   },

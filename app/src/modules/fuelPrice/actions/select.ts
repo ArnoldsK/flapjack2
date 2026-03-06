@@ -1,7 +1,7 @@
 import type { AppContext } from "@app/context";
 import * as FuelPrice from "@app/modules/fuelPrice";
 
-export const getAll = async (
+export const getLatest = async (
   ctx: AppContext,
 ): Promise<FuelPrice.db.Table[]> => {
   const subquery = ctx
