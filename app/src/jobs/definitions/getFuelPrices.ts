@@ -5,19 +5,20 @@ import type { FuelType } from "@app/modules/fuelPrice";
 import * as FuelPrice from "@app/modules/fuelPrice";
 import { checkUnreachable } from "@shared/utils/error";
 
-type FuelStationName = "Neste" | "CircleK" | "Virsi";
-
 interface SiteFuelEntry {
   type: FuelType;
   price: number;
 }
 
-const SITES: Record<FuelStationName, string> = {
+const SITES = {
   Neste: "https://www.neste.lv/lv/content/degvielas-cenas",
   CircleK: "https://www.circlek.lv/degviela-miles/degvielas-cenas",
   Virsi:
     "https://www.virsi.lv/lv/privatpersonam/degviela/degvielas-un-elektrouzlades-cenas",
+  Viada: "https://www.viada.lv/zemakas-degvielas-cenas/",
 };
+
+type FuelStationName = keyof typeof SITES;
 
 const VIRSI_DATA_TYPE_TO_FUEL: Record<string, FuelType> = {
   dd: "Diesel",
@@ -32,7 +33,7 @@ export default defineJob({
   schedule: "0 * * * *", // every hour at the 0th minute
 
   description:
-    "Scrapes fuel prices from Virsi, Neste, CircleK and aggregates by fuel type (lowest price).",
+    "Scrapes fuel prices from Virsi, Neste, CircleK, Viada and aggregates by fuel type (lowest price).",
 
   productionOnly: true,
 
@@ -123,6 +124,8 @@ const getSiteFuelPrices = (
       return getCircleKFuelPrices($);
     case "Virsi":
       return getVirsiFuelPrices($);
+    case "Viada":
+      return getViadaFuelPrices($);
     default:
       checkUnreachable(name);
       return [];
@@ -208,6 +211,42 @@ const getCircleKFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
 
     const name = cells.eq(0).text().replace(/\s+/g, " ").trim().toLowerCase();
     const type = CIRCLEK_LABEL_TO_TYPE[name];
+    if (!type) return;
+
+    const priceText = cells.eq(1).text();
+    const price = parsePriceFromText(priceText);
+    if (price === null) return;
+
+    entries.push({ type, price });
+  });
+
+  return entries;
+};
+
+/** Viada: fuel type is in img src (e.g. petrol_95ecto_new.png). Check in order of specificity. */
+const getViadaFuelTypeFromImgSrc = (src: string): FuelType | null => {
+  const s = src.toLowerCase();
+  if (s.includes("petrol_d_ecto_new")) return "Diesel";
+  if (s.includes("petrol_95ecto_new")) return "95";
+  if (s.includes("petrol_98_new")) return "98";
+  if (s.includes("gaze")) return "LPG";
+
+  return null;
+};
+
+const getViadaFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
+  const entries: SiteFuelEntry[] = [];
+
+  $(".the_content_wrapper table tbody tr").each((_, el) => {
+    const row = $(el);
+    const cells = row.find("td");
+    if (cells.length < 2) return;
+
+    const firstCell = cells.eq(0);
+    const img = firstCell.find("img").attr("src");
+    if (!img) return;
+
+    const type = getViadaFuelTypeFromImgSrc(img);
     if (!type) return;
 
     const priceText = cells.eq(1).text();
