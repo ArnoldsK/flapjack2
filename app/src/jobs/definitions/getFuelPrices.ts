@@ -103,7 +103,7 @@ export default defineJob({
         ),
       ];
 
-      await FuelPrice.upsertIfChanged(ctx, {
+      await FuelPrice.insert(ctx, {
         fuel_type: fuelType,
         price: priceRounded,
         station_names: uniqueStations,

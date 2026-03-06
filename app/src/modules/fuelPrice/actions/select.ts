@@ -4,10 +4,24 @@ import * as FuelPrice from "@app/modules/fuelPrice";
 export const getAll = async (
   ctx: AppContext,
 ): Promise<FuelPrice.db.Table[]> => {
+  const subquery = ctx
+    .db(FuelPrice.db.TableName)
+    .select("fuel_type")
+    .max("updated_at", { as: "updated_at" })
+    .groupBy("fuel_type")
+    .as("latest");
+
   const rows = await ctx
     .db<FuelPrice.db.Table>(FuelPrice.db.TableName)
-    .select("*")
-    .orderBy("fuel_type", "asc");
+    .select("fuel_prices.*")
+    .join(subquery, function () {
+      this.on("fuel_prices.fuel_type", "=", "latest.fuel_type").andOn(
+        "fuel_prices.updated_at",
+        "=",
+        "latest.updated_at",
+      );
+    })
+    .orderBy("fuel_prices.fuel_type", "asc");
 
   return rows.map((row) => ({
     ...row,
