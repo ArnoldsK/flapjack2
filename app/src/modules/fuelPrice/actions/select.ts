@@ -33,6 +33,35 @@ export const getAll = async (
   }));
 };
 
+export const getPreviousBatch = async (
+  ctx: AppContext,
+  latestRows: FuelPrice.db.Table[],
+): Promise<FuelPrice.db.Table[]> => {
+  const results = await Promise.all(
+    latestRows.map(async (row) => {
+      const prev = await ctx
+        .db<FuelPrice.db.Table>(FuelPrice.db.TableName)
+        .where("fuel_type", row.fuel_type)
+        .where("created_at", "<", row.created_at)
+        .orderBy("created_at", "desc")
+        .first();
+
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        station_names: normalizeStationNames(prev.station_names),
+        created_at:
+          prev.created_at instanceof Date
+            ? prev.created_at
+            : new Date(prev.created_at),
+      };
+    }),
+  );
+
+  return results.filter((r): r is FuelPrice.db.Table => r !== null);
+};
+
 const normalizeStationNames = (raw: unknown): string[] => {
   if (Array.isArray(raw)) return raw as string[];
 

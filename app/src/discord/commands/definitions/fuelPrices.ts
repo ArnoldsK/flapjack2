@@ -1,56 +1,54 @@
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import { staticConfig } from "@app/config/static";
 import { defineCommand } from "@app/discord/commands/defineCommand";
+import type { FuelPriceCard } from "@app/modules/canvas";
+import * as Canvas from "@app/modules/canvas";
 import * as FuelPrice from "@app/modules/fuelPrice";
-
-dayjs.extend(relativeTime);
 
 const DISPLAY_ORDER: FuelPrice.db.FuelType[] = ["95", "98", "Diesel", "LPG"];
 
 export default defineCommand({
-  version: 1,
+  version: 2,
 
   data: new SlashCommandBuilder()
     .setName("fuel-prices")
     .setDescription("Show latest aggregated fuel prices (95, 98, Diesel, LPG)"),
 
   execute: async (ctx, interaction) => {
-    const isAutoChannel = interaction.channelId === staticConfig.channels.auto;
+    const ephemeral = ![
+      staticConfig.channels.auto,
+      staticConfig.channels.logs,
+    ].includes(interaction.channelId);
 
     await interaction.deferReply({
-      flags: !isAutoChannel ? MessageFlags.Ephemeral : undefined,
+      flags: ephemeral ? MessageFlags.Ephemeral : undefined,
     });
 
     const rows = await FuelPrice.getAll(ctx);
+    const previousRows = await FuelPrice.getPreviousBatch(ctx, rows);
+
     const byType = new Map(rows.map((row) => [row.fuel_type, row]));
+    const prevByType = new Map(previousRows.map((row) => [row.fuel_type, row]));
 
-    const fields = DISPLAY_ORDER.map((fuelType) => {
+    const cards: FuelPriceCard[] = DISPLAY_ORDER.flatMap((fuelType) => {
       const row = byType.get(fuelType);
-      const value = row != null ? Number(row.price).toFixed(3) : "-";
+      if (!row) return [];
 
-      return { name: fuelType, value, inline: true };
+      const prev = prevByType.get(fuelType);
+
+      return {
+        fuelType,
+        price: Number(row.price),
+        previousPrice: prev ? Number(prev.price) : null,
+        stationNames: row.station_names,
+      };
     });
 
-    const latestCreated =
-      rows.length > 0
-        ? new Date(Math.max(...rows.map((r) => r.created_at.getTime())))
-        : null;
-    const footerText =
-      latestCreated != null
-        ? `Updated ${dayjs(latestCreated).fromNow()}`
-        : "No data";
+    const imageBuffer = Canvas.getFuelPricesImage(cards);
 
     await interaction.editReply({
-      embeds: [
-        {
-          title: "Fuel prices (EUR/l)",
-          fields,
-          footer: { text: footerText },
-        },
-      ],
+      files: [{ attachment: imageBuffer, name: "fuel-prices.png" }],
     });
   },
 });
