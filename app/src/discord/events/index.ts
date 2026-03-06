@@ -1,19 +1,20 @@
 import type { Client, ClientEvents } from "discord.js";
 
 import type { AppContext } from "@app/context";
-import type { EventDefinition } from "@app/discord/events/defineEvent";
-import addChannelNewsRoles from "@app/discord/events/definitions/addChannelNewsRoles";
-import addExpAndCreditsOnMessage from "@app/discord/events/definitions/addExpAndCreditsOnMessage";
-import adjustLinksInMessages from "@app/discord/events/definitions/adjustLinksInMessages";
-import createPersistentThread from "@app/discord/events/definitions/createPersistentThread";
-import handleVideoLinks from "@app/discord/events/definitions/handleVideoLinks";
-import interactionCreate from "@app/discord/events/definitions/interactionCreate";
-import logGuildMemberRemove from "@app/discord/events/definitions/logGuildMemberRemove";
-import ready from "@app/discord/events/definitions/ready";
-import unarchivePersistentThread from "@app/discord/events/definitions/unarchivePersistentThread";
-import upperClassMessage from "@app/discord/events/definitions/upperClassMessage";
-import userRoleMemberAdd from "@app/discord/events/definitions/userRoleMemberAdd";
-import userRoleMemberUpdate from "@app/discord/events/definitions/userRoleMemberUpdate";
+
+import type { EventDefinition } from "./defineEvent";
+import addChannelNewsRoles from "./definitions/addChannelNewsRoles";
+import addExpAndCreditsOnMessage from "./definitions/addExpAndCreditsOnMessage";
+import adjustLinksInMessages from "./definitions/adjustLinksInMessages";
+import createPersistentThread from "./definitions/createPersistentThread";
+import handleVideoLinks from "./definitions/handleVideoLinks";
+import interactionCreate from "./definitions/interactionCreate";
+import logGuildMemberRemove from "./definitions/logGuildMemberRemove";
+import ready from "./definitions/ready";
+import unarchivePersistentThread from "./definitions/unarchivePersistentThread";
+import upperClassMessage from "./definitions/upperClassMessage";
+import userRoleMemberAdd from "./definitions/userRoleMemberAdd";
+import userRoleMemberUpdate from "./definitions/userRoleMemberUpdate";
 
 const eventList: EventDefinition<keyof ClientEvents>[] = [
   ready as EventDefinition<keyof ClientEvents>,

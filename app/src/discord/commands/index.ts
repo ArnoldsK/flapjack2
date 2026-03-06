@@ -1,17 +1,19 @@
 import type { SlashCommandModule } from "@app/discord/commands/defineCommand";
-import archive from "@app/discord/commands/definitions/archive";
-import bj from "@app/discord/commands/definitions/bj";
-import boosterIcon from "@app/discord/commands/definitions/boosterIcon";
-import coinflip from "@app/discord/commands/definitions/coinflip";
-import color from "@app/discord/commands/definitions/color";
-import credits from "@app/discord/commands/definitions/credits";
-import jb from "@app/discord/commands/definitions/jb";
-import job from "@app/discord/commands/definitions/job";
-import ping from "@app/discord/commands/definitions/ping";
-import rank from "@app/discord/commands/definitions/rank";
-import remind from "@app/discord/commands/definitions/remind";
-import roll from "@app/discord/commands/definitions/roll";
-import rsLoot from "@app/discord/commands/definitions/rsLoot";
+
+import archive from "./definitions/archive";
+import bj from "./definitions/bj";
+import boosterIcon from "./definitions/boosterIcon";
+import coinflip from "./definitions/coinflip";
+import color from "./definitions/color";
+import credits from "./definitions/credits";
+import fuelPrices from "./definitions/fuelPrices";
+import jb from "./definitions/jb";
+import job from "./definitions/job";
+import ping from "./definitions/ping";
+import rank from "./definitions/rank";
+import remind from "./definitions/remind";
+import roll from "./definitions/roll";
+import rsLoot from "./definitions/rsLoot";
 
 const commandList: SlashCommandModule[] = [
   archive,
@@ -27,6 +29,7 @@ const commandList: SlashCommandModule[] = [
   rsLoot,
   coinflip,
   roll,
+  fuelPrices,
 ];
 
 export const commands = new Map<string, SlashCommandModule>(

@@ -1,17 +1,20 @@
 import cron from "node-cron";
 
 import type { AppContext } from "@app/context";
-import type { JobDefinition } from "@app/jobs/defineJob";
-import createWeekRecap from "@app/jobs/definitions/createWeekRecap";
-import endReminders from "@app/jobs/definitions/endReminders";
-import resetCredits from "@app/jobs/definitions/resetCredits";
-import resetPoeScarabsStaticData from "@app/jobs/definitions/resetPoeScarabsStaticData";
+
+import type { JobDefinition } from "./defineJob";
+import createWeekRecap from "./definitions/createWeekRecap";
+import endReminders from "./definitions/endReminders";
+import getFuelPrices from "./definitions/getFuelPrices";
+import resetCredits from "./definitions/resetCredits";
+import resetPoeScarabsStaticData from "./definitions/resetPoeScarabsStaticData";
 
 const registry: JobDefinition[] = [
   endReminders,
   createWeekRecap,
   resetCredits,
   resetPoeScarabsStaticData,
+  getFuelPrices,
 ];
 
 export const runById = async (
