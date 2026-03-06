@@ -34,13 +34,13 @@ export default defineCommand({
       return { name: fuelType, value, inline: true };
     });
 
-    const latestUpdated =
+    const latestCreated =
       rows.length > 0
-        ? new Date(Math.max(...rows.map((r) => r.updated_at.getTime())))
+        ? new Date(Math.max(...rows.map((r) => r.created_at.getTime())))
         : null;
     const footerText =
-      latestUpdated != null
-        ? `Updated ${dayjs(latestUpdated).fromNow()}`
+      latestCreated != null
+        ? `Updated ${dayjs(latestCreated).fromNow()}`
         : "No data";
 
     await interaction.editReply({

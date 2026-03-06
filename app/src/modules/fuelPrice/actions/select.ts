@@ -7,7 +7,7 @@ export const getAll = async (
   const subquery = ctx
     .db(FuelPrice.db.TableName)
     .select("fuel_type")
-    .max("updated_at", { as: "updated_at" })
+    .max("created_at", { as: "created_at" })
     .groupBy("fuel_type")
     .as("latest");
 
@@ -16,9 +16,9 @@ export const getAll = async (
     .select("fuel_prices.*")
     .join(subquery, function () {
       this.on("fuel_prices.fuel_type", "=", "latest.fuel_type").andOn(
-        "fuel_prices.updated_at",
+        "fuel_prices.created_at",
         "=",
-        "latest.updated_at",
+        "latest.created_at",
       );
     })
     .orderBy("fuel_prices.fuel_type", "asc");
@@ -26,10 +26,10 @@ export const getAll = async (
   return rows.map((row) => ({
     ...row,
     station_names: normalizeStationNames(row.station_names),
-    updated_at:
-      row.updated_at instanceof Date
-        ? row.updated_at
-        : new Date(row.updated_at),
+    created_at:
+      row.created_at instanceof Date
+        ? row.created_at
+        : new Date(row.created_at),
   }));
 };
 

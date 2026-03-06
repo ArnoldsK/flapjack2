@@ -7,7 +7,7 @@ export interface Table {
   fuel_type: FuelType;
   price: number;
   station_names: string[];
-  updated_at: Date;
+  created_at: Date;
 }
 
-export type InsertInput = Omit<Table, "id" | "updated_at">;
+export type InsertInput = Omit<Table, "id" | "created_at">;

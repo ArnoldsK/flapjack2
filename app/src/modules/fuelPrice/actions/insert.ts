@@ -8,7 +8,7 @@ export const insert = async (
   const existing = await ctx
     .db<FuelPrice.db.Table>(FuelPrice.db.TableName)
     .where({ fuel_type: input.fuel_type })
-    .orderBy("updated_at", "desc")
+    .orderBy("created_at", "desc")
     .first();
 
   const stationNamesJson = JSON.stringify(input.station_names);
@@ -31,6 +31,6 @@ export const insert = async (
     fuel_type: input.fuel_type,
     price: input.price,
     station_names: stationNamesJson as unknown as string[],
-    updated_at: ctx.db.fn.now(),
+    created_at: ctx.db.fn.now(),
   });
 };
