@@ -29,7 +29,7 @@ export default defineCommand({
 
     const fields = DISPLAY_ORDER.map((fuelType) => {
       const row = byType.get(fuelType);
-      const value = row != null ? row.price.toFixed(3) : "-";
+      const value = row != null ? Number(row.price).toFixed(3) : "-";
 
       return { name: fuelType, value, inline: true };
     });

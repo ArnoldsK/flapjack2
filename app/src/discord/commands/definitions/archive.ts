@@ -1,4 +1,8 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+  MessageFlags,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from "discord.js";
 
 import { staticConfig } from "@app/config/static";
 import { Color } from "@app/constants";
@@ -18,8 +22,8 @@ export default defineCommand({
 
     if (!isTextChannel(channel)) {
       await interaction.reply({
+        flags: MessageFlags.Ephemeral,
         content: "Unable to archive this channel.",
-        ephemeral: true,
       });
 
       return;

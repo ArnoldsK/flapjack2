@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { SlashCommandBuilder } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import { defineCommand } from "@app/discord/commands/defineCommand";
 import * as Reminder from "@app/modules/reminder";
@@ -72,8 +72,8 @@ export default defineCommand({
 
     if (durationValue === null) {
       await interaction.reply({
+        flags: MessageFlags.Ephemeral,
         content: "You must provide a duration value.",
-        ephemeral: true,
       });
 
       return;

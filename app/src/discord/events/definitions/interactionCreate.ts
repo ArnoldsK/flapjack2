@@ -1,4 +1,4 @@
-import { Events, type Interaction } from "discord.js";
+import { Events, type Interaction, MessageFlags } from "discord.js";
 
 import { commands } from "@app/discord/commands";
 import { defineEvent } from "@app/discord/events/defineEvent";
@@ -25,13 +25,13 @@ export default defineEvent({
       );
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
+          flags: MessageFlags.Ephemeral,
           content: "There was an error while executing this command.",
-          ephemeral: true,
         });
       } else {
         await interaction.reply({
+          flags: MessageFlags.Ephemeral,
           content: "There was an error while executing this command.",
-          ephemeral: true,
         });
       }
     }

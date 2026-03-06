@@ -1,5 +1,9 @@
 import type { ChatInputCommandInteraction } from "discord.js";
-import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+  MessageFlags,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from "discord.js";
 
 import type { AppContext } from "@app/context";
 import { defineCommand } from "@app/discord/commands/defineCommand";
@@ -40,7 +44,7 @@ export default defineCommand({
     if (sub !== "run") return;
 
     const jobId = interaction.options.getString("job_id", true);
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     try {
       await runById(ctx, jobId);
       await interaction.editReply(`Job \`${jobId}\` completed.`);
