@@ -15,20 +15,10 @@ interface SiteFuelEntry {
 
 const SITES = {
   Neste: "https://www.neste.lv/lv/content/degvielas-cenas",
-  CircleK: "https://www.circlek.lv/degviela-miles/degvielas-cenas",
-  Virsi:
-    "https://www.virsi.lv/lv/privatpersonam/degviela/degvielas-un-elektrouzlades-cenas",
   Viada: "https://www.viada.lv/zemakas-degvielas-cenas/",
 };
 
 type FuelStationName = keyof typeof SITES;
-
-const VIRSI_DATA_TYPE_TO_FUEL: Record<string, FuelType> = {
-  dd: "Diesel",
-  "95e": "95",
-  "98e": "98",
-  lpg: "LPG",
-};
 
 export default defineJob({
   id: "getFuelPrices",
@@ -36,7 +26,7 @@ export default defineJob({
   schedule: "0 * * * *", // every hour at the 0th minute
 
   description:
-    "Scrapes fuel prices from Virsi, Neste, CircleK, Viada and aggregates by fuel type (lowest price).",
+    "Scrapes fuel prices: Neste for 95, 98, Diesel; Viada for LPG. Aggregates by fuel type.",
 
   productionOnly: true,
 
@@ -77,6 +67,9 @@ export default defineJob({
 
       const siteEntries = getSiteFuelPrices(name, $);
       for (const entry of siteEntries) {
+        if (name === "Viada" && entry.type !== "LPG") continue;
+        if (name === "Neste" && entry.type === "LPG") continue;
+
         entriesWithStation.push({
           type: entry.type,
           price: entry.price,
@@ -155,10 +148,6 @@ const getSiteFuelPrices = (
   switch (name) {
     case "Neste":
       return getNesteFuelPrices($);
-    case "CircleK":
-      return getCircleKFuelPrices($);
-    case "Virsi":
-      return getVirsiFuelPrices($);
     case "Viada":
       return getViadaFuelPrices($);
     default:
@@ -176,25 +165,6 @@ const parsePriceFromText = (text: string): number | null => {
   const value = parseFloat(normalized);
 
   return Number.isFinite(value) ? value : null;
-};
-
-const getVirsiFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
-  const entries: SiteFuelEntry[] = [];
-
-  $(".price-card").each((_, el) => {
-    const card = $(el);
-    const dataType = card.attr("data-type")?.toLowerCase();
-    if (!dataType || !(dataType in VIRSI_DATA_TYPE_TO_FUEL)) return;
-
-    const type = VIRSI_DATA_TYPE_TO_FUEL[dataType] as FuelType;
-    const priceText = card.find(".price span").last().text().trim();
-    const price = parsePriceFromText(priceText);
-    if (price === null) return;
-
-    entries.push({ type, price });
-  });
-
-  return entries;
 };
 
 const NESTE_LABEL_TO_TYPE: Record<string, FuelType> = {
@@ -225,49 +195,9 @@ const getNesteFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
   return entries;
 };
 
-const CIRCLEK_LABEL_TO_TYPE: Record<string, FuelType> = {
-  "95miles": "95",
-  "98miles+": "98",
-  autogāze: "LPG",
-  dmiles: "Diesel",
-};
-
-const getCircleKFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
-  const entries: SiteFuelEntry[] = [];
-
-  const rows = $("table.uk-table tbody tr").length
-    ? $("table.uk-table tbody tr")
-    : $("table tbody tr");
-
-  rows.each((_, el) => {
-    const row = $(el);
-    const cells = row.find("td");
-    if (cells.length < 2) return;
-
-    const name = cells.eq(0).text().replace(/\s+/g, " ").trim().toLowerCase();
-    const type = CIRCLEK_LABEL_TO_TYPE[name];
-    if (!type) return;
-
-    const priceText = cells.eq(1).text();
-    const price = parsePriceFromText(priceText);
-    if (price === null) return;
-
-    entries.push({ type, price });
-  });
-
-  return entries;
-};
-
-/** Viada: fuel type is in img src (e.g. petrol_95ecto_new.png). Check in order of specificity. */
-const getViadaFuelTypeFromImgSrc = (src: string): FuelType | null => {
-  const s = src.toLowerCase();
-  if (s.includes("petrol_d_ecto_new")) return "Diesel";
-  if (s.includes("petrol_95ecto_new")) return "95";
-  if (s.includes("petrol_98_new")) return "98";
-  if (s.includes("gaze")) return "LPG";
-
-  return null;
-};
+/** Viada: we only use LPG; fuel type is in img src (e.g. gaze). */
+const getViadaLPGFromImgSrc = (src: string): boolean =>
+  src.toLowerCase().includes("gaze");
 
 const getViadaFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
   const entries: SiteFuelEntry[] = [];
@@ -281,14 +211,13 @@ const getViadaFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
     const img = firstCell.find("img").attr("src");
     if (!img) return;
 
-    const type = getViadaFuelTypeFromImgSrc(img);
-    if (!type) return;
+    if (!getViadaLPGFromImgSrc(img)) return;
 
     const priceText = cells.eq(1).text();
     const price = parsePriceFromText(priceText);
     if (price === null) return;
 
-    entries.push({ type, price });
+    entries.push({ type: "LPG", price });
   });
 
   return entries;
