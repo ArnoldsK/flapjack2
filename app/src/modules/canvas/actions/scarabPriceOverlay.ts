@@ -6,10 +6,10 @@ import { canvasFont } from "@app/modules/canvas/utils/font";
 import type { PoeScarab } from "@shared/types";
 import { formatScarabPrice } from "@shared/utils/number";
 
-const ROW_GAP = 10;
-const SCARAB_GAP = 4;
-const SCARAB_SIZE = 48;
-const SCARAB_SIZE_W = 52;
+const SCARAB_GAP = 6;
+const SCARAB_SIZE = 49;
+const START_X = 42;
+const START_Y = 22;
 
 export const isGoodScarabPrice = (chaosValue: number): boolean => {
   const roundedPrecisionValue = Math.round(chaosValue * 10) / 10;
@@ -45,21 +45,27 @@ export const getScarabPriceOverlay = ({
   scarabs: PoeScarab[];
   updatedAt: Date;
 }): Buffer => {
+  const scarabByName = new Map(scarabs.map((scarab) => [scarab.name, scarab]));
+  const options: Options = { scarabByName };
+
   const canvas = createCanvas(820, 780);
   const ctx = canvas.getContext("2d");
 
-  const scarabByName = new Map(scarabs.map((scarab) => [scarab.name, scarab]));
+  const columnCanvases = mapping.cols.map((col) =>
+    getColumnCanvas(col, options),
+  );
 
-  let y = 20;
-  for (const row of mapping.rows) {
-    const rowCanvas = getRowCanvas(row, { scarabByName });
+  const maxColumnHeight = Math.max(...columnCanvases.map((cc) => cc.height));
 
-    const x =
-      (canvas.width - rowCanvas.width) / 2 +
-      (row.scuffed ? SCARAB_SIZE * 0.33 : 0);
+  let x = START_X;
+  for (let i = 0; i < columnCanvases.length; i++) {
+    const col = mapping.cols[i];
+    const y = col.isVerticallyCentered
+      ? START_Y + (maxColumnHeight - columnCanvases[i].height) / 2
+      : START_Y;
 
-    ctx.drawImage(rowCanvas, x, y);
-    y += rowCanvas.height + ROW_GAP;
+    ctx.drawImage(columnCanvases[i], x, y);
+    x += columnCanvases[i].width + col.marginRight;
   }
 
   ctx.textAlign = "left";
@@ -72,64 +78,50 @@ export const getScarabPriceOverlay = ({
   return canvas.toBuffer("image/png");
 };
 
-const getRowCanvas = (row: ScarabMapping.Row, options: Options) => {
-  const columnCanvases = row.columns.map((column) =>
-    getColumnCanvas(column, options),
-  );
+const getColumnCanvas = (col: ScarabMapping.Column, options: Options) => {
+  const rowCanvases = col.rows.map((row) => getRowCanvas(row, options));
 
-  const width =
-    columnCanvases.reduce((acc, columnCanvas) => acc + columnCanvas.width, 0) +
-    (columnCanvases.length - 1) * row.gap +
-    (row.scuffed ? SCARAB_SIZE * 0.66 : 0);
-  const height = Math.max(
-    ...columnCanvases.map((columnCanvas) => columnCanvas.height),
-  );
-
-  const canvas = createCanvas(width, height);
-  const ctx = canvas.getContext("2d");
-
-  let x = 0;
-  for (const columnCanvas of columnCanvases) {
-    const y = (height - columnCanvas.height) / 2;
-    ctx.drawImage(columnCanvas, x, y);
-    x += columnCanvas.width + row.gap;
-    if (row.scuffed) {
-      x += SCARAB_SIZE * 0.66;
-    }
-  }
-
-  return canvas;
-};
-
-const getColumnCanvas = (column: ScarabMapping.Column, options: Options) => {
-  const groupCanvases = column.groups.map((group) =>
-    getGroupCanvas(group, options),
-  );
-
-  const width = Math.max(
-    ...groupCanvases.map((groupCanvas) => groupCanvas.width),
-  );
+  const width = Math.max(...rowCanvases.map((rc) => rc.width));
   const height =
-    groupCanvases.reduce((acc, groupCanvas) => acc + groupCanvas.height, 0) +
-    (groupCanvases.length - 1) * ROW_GAP;
+    rowCanvases.length * SCARAB_SIZE + (rowCanvases.length - 1) * col.gap;
 
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
 
   let y = 0;
+  for (const rowCanvas of rowCanvases) {
+    ctx.drawImage(rowCanvas, 0, y);
+    y += SCARAB_SIZE + col.gap;
+  }
+
+  return canvas;
+};
+
+const getRowCanvas = (row: ScarabMapping.Row, options: Options) => {
+  const groupCanvases = row.groups.map((group) =>
+    getGroupCanvas(group, options),
+  );
+
+  const width =
+    groupCanvases.reduce((acc, gc) => acc + gc.width, 0) +
+    (groupCanvases.length - 1) * SCARAB_GAP;
+  const height = SCARAB_SIZE;
+
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext("2d");
+
+  let x = 0;
   for (const groupCanvas of groupCanvases) {
-    const x = (width - groupCanvas.width) / 2;
-    ctx.drawImage(groupCanvas, x, y);
-    y += SCARAB_SIZE + ROW_GAP;
+    ctx.drawImage(groupCanvas, x, 0);
+    x += groupCanvas.width + SCARAB_GAP;
   }
 
   return canvas;
 };
 
 const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
-  const scarabWidth = group.wide ? SCARAB_SIZE_W : SCARAB_SIZE;
   const width =
-    group.scarabs.length * scarabWidth +
+    group.scarabs.length * SCARAB_SIZE +
     (group.scarabs.length - 1) * SCARAB_GAP;
   const height = SCARAB_SIZE;
 
@@ -159,7 +151,7 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
       ctx.roundRect(
         x,
         SCARAB_SIZE - padding - metrics.emHeightAscent,
-        scarabWidth,
+        SCARAB_SIZE,
         metrics.emHeightAscent + padding,
         padding,
       );
@@ -168,12 +160,12 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
       ctx.fillStyle = "#fff";
       ctx.fillText(
         text,
-        x + scarabWidth / 2 - metrics.width / 2,
+        x + SCARAB_SIZE / 2 - metrics.width / 2,
         SCARAB_SIZE - padding / 2,
       );
     }
 
-    x += scarabWidth + SCARAB_GAP;
+    x += SCARAB_SIZE + SCARAB_GAP;
   }
 
   return canvas;
