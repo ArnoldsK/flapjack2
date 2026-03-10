@@ -59,13 +59,14 @@ export const getScarabPriceOverlay = ({
 
   let x = START_X;
   for (let i = 0; i < columnCanvases.length; i++) {
-    const col = mapping.cols[i];
+    const col = mapping.cols[i]!;
+    const colCanvas = columnCanvases[i]!;
     const y = col.isVerticallyCentered
-      ? START_Y + (maxColumnHeight - columnCanvases[i].height) / 2
+      ? START_Y + (maxColumnHeight - colCanvas.height) / 2
       : START_Y;
 
-    ctx.drawImage(columnCanvases[i], x, y);
-    x += columnCanvases[i].width + col.marginRight;
+    ctx.drawImage(colCanvas, x, y);
+    x += colCanvas.width + col.marginRight;
   }
 
   ctx.textAlign = "left";

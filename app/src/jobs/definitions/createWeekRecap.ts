@@ -29,7 +29,7 @@ const fetchMessagesUntil = async (
   ];
 
   for (let i = 0; i < messages.length; i++) {
-    if (messages[i].createdAt.getTime() < endDate.getTime()) {
+    if (messages[i]!.createdAt.getTime() < endDate.getTime()) {
       return messages.slice(0, i);
     }
   }

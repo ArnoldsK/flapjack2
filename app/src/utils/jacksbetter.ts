@@ -113,7 +113,7 @@ export class JacksBetter {
   setCardHold(id: string, isHeld: boolean): void {
     const idx = this.#cards.findIndex((c) => c.id === id);
     if (idx === -1) throw new Error(`Card ${id} not found`);
-    this.#cards[idx].isHeld = isHeld;
+    this.#cards[idx]!.isHeld = isHeld;
   }
 
   draw(): JbDrawResult {
@@ -157,7 +157,7 @@ export class JacksBetter {
 
   #drawNewCards(): void {
     for (let i = 0; i < this.#cards.length; i++) {
-      if (!this.#cards[i].isHeld) {
+      if (!this.#cards[i]!.isHeld) {
         this.#cards[i] = this.#takeDeckCard();
       }
     }

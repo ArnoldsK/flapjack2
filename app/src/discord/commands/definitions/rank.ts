@@ -35,7 +35,7 @@ const getAllRankData = async (ctx: AppContext): Promise<RankData[]> => {
   const result: RankData[] = [];
 
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
+    const row = rows[i]!;
     const member = guild.members.cache.get(row.user_id);
     if (!member?.user || member.user.bot) continue;
 

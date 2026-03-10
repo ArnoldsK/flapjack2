@@ -33,7 +33,7 @@ const getLeagueName = async (): Promise<string> => {
     }),
   );
 
-  return data.economyLeagues[0].name;
+  return data.economyLeagues[0]!.name;
 };
 
 const getScarabData = async (league: string): Promise<PoeScarab[]> => {

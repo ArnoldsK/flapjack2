@@ -42,12 +42,12 @@ export const getRankImage = async (input: RankImageInput): Promise<Buffer> => {
     type: "image/png",
     count: 1,
   });
-  const backgroundColor = colorData[0].hex("rgb");
+  const backgroundColor = colorData[0]!.hex("rgb");
   const textColor = getBackgroundTextColor(backgroundColor);
   const blendColor = chroma
     .scale([backgroundColor, textColor])
     .mode("lab")
-    .colors(1)[0];
+    .colors(1)[0]!;
 
   const [width, height] = [240, 48];
   const margin = 8;

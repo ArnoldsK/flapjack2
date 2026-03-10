@@ -65,7 +65,7 @@ const getLogCommits = (log: string): Commit[] => {
       const [hash, ...words] = line.split(" ");
 
       return {
-        hash,
+        hash: hash!,
         message: words.join(" ").trim(),
       };
     })

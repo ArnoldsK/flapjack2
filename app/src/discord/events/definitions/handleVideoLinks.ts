@@ -13,7 +13,8 @@ const getVideoIds = (content: string): string[] => {
   const regex =
     /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(?:-nocookie)?\.com|youtu\.be))(\/(?:[\w-]+\?v=|embed\/|live\/|v\/)?)([\w-]+)(\S+)?/g;
   const matches = [...content.matchAll(regex)];
-  const videoIds = matches.map((m) => m[5]);
+  const videoIds = matches.map((m) => m[5]).filter((id): id is string => !!id);
+
   return [...new Set(videoIds)];
 };
 

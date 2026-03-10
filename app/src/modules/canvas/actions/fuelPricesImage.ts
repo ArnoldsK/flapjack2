@@ -123,7 +123,7 @@ export const getFuelPricesImage = (cards: FuelPriceCard[]): Buffer => {
     const row = Math.floor(i / cols);
     const x = GAP + col * (CARD_W + GAP);
     const y = GAP + row * (CARD_H + GAP);
-    const cardCanvas = drawCard(cards[i]);
+    const cardCanvas = drawCard(cards[i]!);
 
     ctx.drawImage(cardCanvas, x, y);
   }

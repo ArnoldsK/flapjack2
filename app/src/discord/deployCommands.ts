@@ -11,7 +11,7 @@ const parseVersionFromDescription = (
 ): number => {
   if (!description) return 0;
   const match = description.match(VERSION_SUFFIX_REGEX);
-  return match ? Number.parseInt(match[1], 10) : 0;
+  return match ? Number.parseInt(match[1]!, 10) : 0;
 };
 
 const buildCommandPayload = (
