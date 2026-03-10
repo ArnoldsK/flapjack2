@@ -24,7 +24,13 @@ export default defineCommand({
     const cards = FuelPrice.utils.buildCards(rows, previousRows);
     const imageBuffer = Canvas.getFuelPricesImage(cards);
 
+    const latestUpdate = new Date(
+      Math.max(...rows.map((r) => r.created_at.getTime())),
+    );
+    const latestUpdateTimestamp = Math.floor(latestUpdate.getTime() / 1000);
+
     await interaction.editReply({
+      content: `Updated <t:${latestUpdateTimestamp}:R>`,
       files: [{ attachment: imageBuffer, name: "fuel-prices.png" }],
     });
   },
