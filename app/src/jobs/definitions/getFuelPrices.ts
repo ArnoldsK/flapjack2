@@ -23,7 +23,8 @@ type FuelStationName = keyof typeof SITES;
 export default defineJob({
   id: "getFuelPrices",
 
-  schedule: "0 * * * *", // every hour at the 0th minute
+  schedule: "0 12 * * *", // every day at 12:00
+  timezone: "Europe/Riga",
 
   description:
     "Scrapes fuel prices: Neste for 95, 98, Diesel; Viada for LPG. Aggregates by fuel type.",

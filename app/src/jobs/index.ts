@@ -38,9 +38,13 @@ export const registerAll = (ctx: AppContext): void => {
       continue;
     }
 
-    cron.schedule(job.schedule, async () => {
-      await runById(ctx, job.id);
-    });
+    cron.schedule(
+      job.schedule,
+      async () => {
+        await runById(ctx, job.id);
+      },
+      { timezone: job.timezone },
+    );
     console.log(`[job:${job.id}] Scheduled (${job.schedule})`);
   }
 };
