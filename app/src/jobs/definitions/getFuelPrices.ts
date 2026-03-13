@@ -96,6 +96,11 @@ export default defineJob({
       existingRows.map((row) => [row.fuel_type, row]),
     );
 
+    const resolved = new Map<
+      FuelType,
+      { price: number; station_names: string[] }
+    >();
+
     let hasChanges = false;
 
     for (const [fuelType, entries] of byType) {
@@ -107,6 +112,11 @@ export default defineJob({
         ),
       ];
 
+      resolved.set(fuelType, {
+        price: priceRounded,
+        station_names: uniqueStations,
+      });
+
       const existing = existingByType.get(fuelType);
       if (
         existing &&
@@ -117,12 +127,27 @@ export default defineJob({
         continue;
       }
 
-      await FuelPrice.insert(ctx, {
-        fuel_type: fuelType,
-        price: priceRounded,
-        station_names: uniqueStations,
-      });
       hasChanges = true;
+    }
+
+    if (hasChanges) {
+      for (const [fuelType, data] of resolved) {
+        await FuelPrice.insert(ctx, {
+          fuel_type: fuelType,
+          price: data.price,
+          station_names: data.station_names,
+        });
+      }
+
+      for (const [fuelType, existing] of existingByType) {
+        if (resolved.has(fuelType)) continue;
+
+        await FuelPrice.insert(ctx, {
+          fuel_type: fuelType,
+          price: Number(existing.price),
+          station_names: existing.station_names,
+        });
+      }
     }
 
     if (hasChanges) {
