@@ -1,10 +1,16 @@
 import { createCanvas } from "@napi-rs/canvas";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 
 import type { ScarabMapping } from "@app/constants/scarabs";
 import { mapping } from "@app/constants/scarabs";
 import { canvasFont } from "@app/modules/canvas/utils/font";
 import type { PoeScarab } from "@shared/types";
 import { formatScarabPrice } from "@shared/utils/number";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const SCARAB_GAP = 6;
 const SCARAB_SIZE = 49;
@@ -28,13 +34,7 @@ interface Options {
 }
 
 const formatOverlayDate = (date: Date): string =>
-  date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  dayjs(date).tz("Europe/Riga").format("DD/MM/YYYY, HH:mm");
 
 export const getScarabPriceOverlay = ({
   league,
