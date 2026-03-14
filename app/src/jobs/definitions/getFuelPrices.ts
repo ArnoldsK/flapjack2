@@ -23,8 +23,7 @@ type FuelStationName = keyof typeof SITES;
 export default defineJob({
   id: "getFuelPrices",
 
-  schedule: "0 12 * * *", // every day at 12:00
-  timezone: "Europe/Riga",
+  schedule: "0 * * * *", // every hour at the 0th minute
 
   description:
     "Scrapes fuel prices: Neste for 95, 98, Diesel; Viada for LPG. Aggregates by fuel type.",
@@ -36,7 +35,11 @@ export default defineJob({
       (Object.entries(SITES) as [FuelStationName, string][]).map(
         async ([name, url]) => {
           try {
-            const response = await fetch(url);
+            const response = await fetch(url, {
+              headers: {
+                "User-Agent": "Flapjack/1.0 (Discord bot; fuel price monitor)",
+              },
+            });
             const html = await response.text();
 
             return { name, $: cheerio.load(html) };

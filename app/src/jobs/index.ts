@@ -43,7 +43,7 @@ export const registerAll = (ctx: AppContext): void => {
       async () => {
         await runById(ctx, job.id);
       },
-      { timezone: job.timezone },
+      { timezone: "Europe/Riga" },
     );
     console.log(`[job:${job.id}] Scheduled (${job.schedule})`);
   }
