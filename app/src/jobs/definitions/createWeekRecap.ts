@@ -4,7 +4,12 @@ import isoWeek from "dayjs/plugin/isoWeek";
 import type { Attachment } from "discord.js";
 
 dayjs.extend(isoWeek);
-import { ChannelType, type Message, type TextChannel } from "discord.js";
+import {
+  ChannelType,
+  type Message,
+  MessageFlags,
+  type TextChannel,
+} from "discord.js";
 
 import { staticConfig } from "@app/config/static";
 import type { AppContext } from "@app/context";
@@ -232,7 +237,7 @@ const sendAnnouncement = async (ctx: AppContext): Promise<void> => {
     return;
   }
 
-  const content = `New weekly recap at <https://pepsidog.lv/recap>`;
+  const content = `New weekly recap at https://pepsidog.lv/recap`;
 
   const messages = await channel.messages.fetch({ limit: 20 });
   const previous = messages.find(
@@ -243,7 +248,10 @@ const sendAnnouncement = async (ctx: AppContext): Promise<void> => {
     await previous.delete();
   }
 
-  await channel.send(content);
+  await channel.send({
+    content,
+    flags: MessageFlags.SuppressEmbeds,
+  });
 };
 
 export default defineJob({
