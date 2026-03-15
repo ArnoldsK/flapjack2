@@ -17,16 +17,14 @@ const SCARAB_SIZE = 49;
 const START_X = 42;
 const START_Y = 22;
 
-export const isGoodScarabPrice = (chaosValue: number): boolean => {
-  const roundedPrecisionValue = Math.round(chaosValue * 10) / 10;
+const getScarabPriceColor = (chaosValue: number): string => {
+  const rounded = Math.round(chaosValue * 10) / 10;
 
-  return roundedPrecisionValue >= 1;
-};
+  if (rounded >= 3) return "#6b5a1e";
+  if (rounded >= 1) return "#1a4b1a";
+  if (rounded < 0.5) return "#4b1a1a";
 
-export const isBadScarabPrice = (chaosValue: number): boolean => {
-  const roundedPrecisionValue = Math.round(chaosValue * 10) / 10;
-
-  return roundedPrecisionValue < 0.5;
+  return "#4b4b4b";
 };
 
 interface Options {
@@ -135,9 +133,7 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
 
     if (scarab) {
       const chaosValue = scarab.chaosValue ?? 0;
-      const bad = isBadScarabPrice(chaosValue);
-      const good = isGoodScarabPrice(chaosValue);
-      const color = bad ? "#4b1a1a" : good ? "#1a4b1a" : "#4b4b4b";
+      const color = getScarabPriceColor(chaosValue);
 
       ctx.textAlign = "left";
       ctx.textBaseline = "bottom";
