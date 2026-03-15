@@ -17,14 +17,41 @@ const SCARAB_SIZE = 49;
 const START_X = 42;
 const START_Y = 22;
 
-const getScarabPriceColor = (chaosValue: number): string => {
+const getScarabPriceColor = (
+  chaosValue: number,
+): {
+  text: string;
+  background: string;
+} => {
   const rounded = Math.round(chaosValue * 10) / 10;
 
-  if (rounded >= 3) return "#6b5a1e";
-  if (rounded >= 1) return "#1a4b1a";
-  if (rounded < 0.5) return "#4b1a1a";
-
-  return "#4b4b4b";
+  if (rounded >= 3) {
+    // Very good
+    return {
+      text: "#FF0000",
+      background: "#FFFFFF",
+    };
+  }
+  if (rounded >= 1) {
+    // Good
+    return {
+      text: "#000000",
+      background: "#D59F00",
+    };
+  }
+  if (rounded >= 0.5) {
+    // Average
+    return {
+      text: "#000000",
+      background: "#D2B287",
+    };
+  } else {
+    // Bad
+    return {
+      text: "#ADA27B",
+      background: "#000000",
+    };
+  }
 };
 
 interface Options {
@@ -143,7 +170,7 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
       const metrics = ctx.measureText(text);
       const padding = 4;
 
-      ctx.fillStyle = color;
+      ctx.fillStyle = color.background;
       ctx.beginPath();
       ctx.roundRect(
         x,
@@ -154,7 +181,7 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
       );
       ctx.fill();
 
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = color.text;
       ctx.fillText(
         text,
         x + SCARAB_SIZE / 2 - metrics.width / 2,
