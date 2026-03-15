@@ -22,6 +22,7 @@ const getScarabPriceColor = (
 ): {
   text: string;
   background: string;
+  bold: boolean;
 } => {
   const rounded = Math.round(chaosValue * 10) / 10;
 
@@ -30,6 +31,7 @@ const getScarabPriceColor = (
     return {
       text: "#FF0000",
       background: "#FFFFFF",
+      bold: true,
     };
   }
   if (rounded >= 1) {
@@ -37,6 +39,7 @@ const getScarabPriceColor = (
     return {
       text: "#111111",
       background: "#D59F00",
+      bold: true,
     };
   }
   if (rounded >= 0.5) {
@@ -44,12 +47,14 @@ const getScarabPriceColor = (
     return {
       text: "#111111",
       background: "#D2B287",
+      bold: false,
     };
   } else {
     // Bad
     return {
       text: "#ADA27B",
       background: "#111111",
+      bold: false,
     };
   }
 };
@@ -164,7 +169,7 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
 
       ctx.textAlign = "left";
       ctx.textBaseline = "bottom";
-      ctx.font = canvasFont(12, { bold: true });
+      ctx.font = canvasFont(12, { bold: color.bold });
 
       const text = formatScarabPrice(chaosValue);
       const metrics = ctx.measureText(text);
