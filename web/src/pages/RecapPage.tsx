@@ -173,7 +173,8 @@ const RecapMessageRow: FC<{
     [openDiscord],
   );
 
-  const dateStr = dayjs(message.createdAt).format("DD/MM/YYYY, HH:mm");
+  const dateStr = dayjs(message.createdAt).format("DD/MM/YYYY HH:mm");
+
   const attachment = message.firstAttachment;
 
   const onRowKeyDown = (e: React.KeyboardEvent) => {

@@ -64,7 +64,7 @@ interface Options {
 }
 
 const formatOverlayDate = (date: Date): string =>
-  dayjs(date).tz("Europe/Riga").format("DD/MM/YYYY, HH:mm");
+  dayjs(date).tz("Europe/Riga").format("DD/MM/YYYY HH:mm");
 
 export const getScarabPriceOverlay = ({
   league,
