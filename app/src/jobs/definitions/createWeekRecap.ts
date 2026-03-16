@@ -1,9 +1,9 @@
 import path from "node:path";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import type { Attachment } from "discord.js";
-
-dayjs.extend(isoWeek);
 import {
   ChannelType,
   type Message,
@@ -18,6 +18,10 @@ import * as Hosting from "@app/modules/hosting";
 import * as StaticData from "@app/modules/staticData";
 import { isDiscordAttachmentUrl, isTextChannel } from "@app/utils/discord";
 import type { WeekRecapMessage } from "@shared/types";
+
+dayjs.extend(isoWeek);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const MIN_UNIQUE_REACTORS_FOR_RECAP = 5;
 
@@ -91,12 +95,13 @@ const getWeekMessages = async (ctx: AppContext): Promise<Message[]> => {
   const guild = ctx.guild();
 
   const isDev = ctx.env.NODE_ENV === "development";
+  const now = dayjs().tz("Europe/Riga");
   const endDate: Date = isDev
-    ? dayjs().subtract(1, "day").toDate()
-    : dayjs().subtract(1, "week").startOf("isoWeek").toDate(); // last week Monday 0:00
+    ? now.subtract(1, "day").toDate()
+    : now.subtract(1, "week").startOf("isoWeek").toDate(); // last week Monday 0:00 Riga
   const startDate: Date = isDev
-    ? dayjs().toDate()
-    : dayjs().startOf("isoWeek").toDate(); // current week Monday 0:00 (exclusive cap)
+    ? now.toDate()
+    : now.startOf("isoWeek").toDate(); // current week Monday 0:00 Riga (exclusive cap)
 
   const channels = guild.channels.cache.filter(
     (ch): ch is TextChannel =>
