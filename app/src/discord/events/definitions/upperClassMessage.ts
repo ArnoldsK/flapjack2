@@ -20,7 +20,7 @@ export default defineEvent({
     }
 
     const row = await Credits.getByUserId(ctx, message.member.id);
-    const creditsVal = row?.credits ?? 0n;
+    const creditsVal = row == null ? 0n : BigInt(row.credits);
     const mult = row?.multiplier ?? 1;
     const effective = creditsVal * BigInt(mult);
 
