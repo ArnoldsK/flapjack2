@@ -26,7 +26,14 @@ export default defineEvent({
     if (newLevelData.lvl >= ACTIVE_MEMBER_LEVEL) {
       const role = ctx.guild().roles.cache.get(staticConfig.roles.activeMember);
       if (role && !message.member.roles.cache.has(role.id)) {
-        await message.member.roles.add(role);
+        try {
+          await message.member.roles.add(role);
+        } catch (error) {
+          console.error(
+            `[addExpAndCredits] Failed to add active member role for ${userId}:`,
+            error,
+          );
+        }
       }
     }
 

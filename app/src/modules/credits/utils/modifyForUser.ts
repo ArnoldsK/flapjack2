@@ -39,10 +39,17 @@ export const modifyForUser = async (
     last_message_at: lastMessageAt,
   });
 
-  await applyUpperClassRole(ctx, {
-    userId: params.userId,
-    effective: newEffective,
-  });
+  try {
+    await applyUpperClassRole(ctx, {
+      userId: params.userId,
+      effective: newEffective,
+    });
+  } catch (error) {
+    console.error(
+      `[credits:modifyForUser] Failed to apply upper class role for ${params.userId}:`,
+      error,
+    );
+  }
 
   return {
     user_id: params.userId,
