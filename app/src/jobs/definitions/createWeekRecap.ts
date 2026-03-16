@@ -241,7 +241,9 @@ const sendAnnouncement = async (ctx: AppContext): Promise<void> => {
 
   const messages = await channel.messages.fetch({ limit: 20 });
   const previous = messages.find(
-    (m) => m.author.id === guild.client.user?.id && m.content === content,
+    (m) =>
+      m.author.id === guild.client.user?.id &&
+      m.content.includes("weekly recap"),
   );
 
   if (previous) {
