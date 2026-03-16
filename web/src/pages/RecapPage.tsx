@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import type { WeekRecapMessage } from "@shared/types";
+import dayjs from "dayjs";
 import type { FC } from "react";
 
 import { useDocumentTitle } from "@web/hooks/useDocumentTitle";
@@ -172,17 +173,7 @@ const RecapMessageRow: FC<{
     [openDiscord],
   );
 
-  const dateStr =
-    typeof message.createdAt === "string"
-      ? new Date(message.createdAt).toLocaleString(undefined, {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      : String(message.createdAt);
-
+  const dateStr = dayjs(message.createdAt).format("DD/MM/YYYY, HH:mm");
   const attachment = message.firstAttachment;
 
   const onRowKeyDown = (e: React.KeyboardEvent) => {
