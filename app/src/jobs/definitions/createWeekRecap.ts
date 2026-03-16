@@ -21,6 +21,42 @@ import type { WeekRecapMessage } from "@shared/types";
 
 const MIN_UNIQUE_REACTORS_FOR_RECAP = 5;
 
+export default defineJob({
+  id: "createWeekRecap",
+
+  schedule: "0 1 * * 1", // every Monday at 1:00 AM
+
+  description: "Create week recap",
+
+  productionOnly: true,
+
+  run: async (ctx) => {
+    const weekMessages = await getWeekMessages(ctx);
+    if (weekMessages.length === 0) {
+      console.log("> Recap > No messages found");
+
+      return;
+    }
+
+    let recapMessages = await Promise.all(weekMessages.map(parseRecapMessage));
+    recapMessages = filterByReactionCount(recapMessages);
+    recapMessages = await uploadMessageDataAttachments(ctx, recapMessages);
+
+    if (recapMessages.length === 0) {
+      console.log("> Recap > No messages found after filtering");
+
+      return;
+    }
+
+    await StaticData.set(ctx, "weekRecap", {
+      createdAt: new Date(),
+      messages: recapMessages,
+    });
+
+    await sendAnnouncement(ctx);
+  },
+});
+
 const getUrlFileExtension = (fileUrl: string): string =>
   path.extname(new URL(fileUrl).pathname);
 
@@ -255,39 +291,3 @@ const sendAnnouncement = async (ctx: AppContext): Promise<void> => {
     flags: MessageFlags.SuppressEmbeds,
   });
 };
-
-export default defineJob({
-  id: "createWeekRecap",
-
-  schedule: "0 1 * * 1", // every Monday at 1:00 AM
-
-  description: "Create week recap",
-
-  productionOnly: true,
-
-  run: async (ctx) => {
-    const weekMessages = await getWeekMessages(ctx);
-    if (weekMessages.length === 0) {
-      console.log("> Recap > No messages found");
-
-      return;
-    }
-
-    let recapMessages = await Promise.all(weekMessages.map(parseRecapMessage));
-    recapMessages = filterByReactionCount(recapMessages);
-    recapMessages = await uploadMessageDataAttachments(ctx, recapMessages);
-
-    if (recapMessages.length === 0) {
-      console.log("> Recap > No messages found after filtering");
-
-      return;
-    }
-
-    await StaticData.set(ctx, "weekRecap", {
-      createdAt: new Date(),
-      messages: recapMessages,
-    });
-
-    await sendAnnouncement(ctx);
-  },
-});
