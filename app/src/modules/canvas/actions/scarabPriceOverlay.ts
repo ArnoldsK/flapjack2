@@ -21,42 +21,64 @@ const getScarabPriceColor = (
   chaosValue: number,
 ): {
   text: string;
+  stroke: string;
   background: string;
   bold: boolean;
 } => {
   const rounded = Math.round(chaosValue * 10) / 10;
 
-  if (rounded >= 3) {
-    // Very good
+  if (rounded >= 90) {
+    // S tier
     return {
-      text: "#FF0000",
-      background: "#FFFFFF",
+      text: "rgb(180, 0, 255)",
+      stroke: "rgb(180, 0, 255)",
+      background: "rgb(255, 255, 255)",
       bold: true,
     };
   }
-  if (rounded >= 1) {
-    // Good
+  if (rounded >= 35) {
+    // A tier
     return {
-      text: "#111111",
-      background: "#D59F00",
+      text: "rgb(255, 255, 255)",
+      stroke: "rgb(255, 255, 255)",
+      background: "rgb(180, 0, 255)",
       bold: true,
+    };
+  }
+  if (rounded >= 12) {
+    // B tier
+    return {
+      text: "rgb(1, 1, 1)",
+      stroke: "rgb(1, 1, 1)",
+      background: "rgb(180, 0, 255)",
+      bold: true,
+    };
+  }
+  if (rounded >= 3) {
+    // C tier
+    return {
+      text: "rgb(1, 1, 1)",
+      stroke: "rgb(1, 1, 1)",
+      background: "rgb(175, 120, 230)",
+      bold: false,
     };
   }
   if (rounded >= 0.5) {
-    // Average
+    // D tier
     return {
-      text: "#111111",
-      background: "#D2B287",
-      bold: false,
-    };
-  } else {
-    // Bad
-    return {
-      text: "#ADA27B",
-      background: "#111111",
+      text: "rgb(175, 120, 230)",
+      stroke: "rgb(175, 120, 230)",
+      background: "rgb(1, 1, 1)",
       bold: false,
     };
   }
+  // Other
+  return {
+    text: "rgb(175, 120, 230)",
+    stroke: "rgb(1, 1, 1)",
+    background: "rgb(1, 1, 1)",
+    bold: false,
+  };
 };
 
 interface Options {
@@ -185,6 +207,10 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
         padding,
       );
       ctx.fill();
+
+      ctx.strokeStyle = color.stroke;
+      ctx.lineWidth = 1;
+      ctx.stroke();
 
       ctx.fillStyle = color.text;
       ctx.fillText(
