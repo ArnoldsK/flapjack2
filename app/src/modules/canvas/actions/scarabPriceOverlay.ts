@@ -69,7 +69,7 @@ const getScarabPriceColor = (
       text: "rgb(175, 120, 230)",
       stroke: "rgb(175, 120, 230)",
       background: "rgb(1, 1, 1)",
-      bold: false,
+      bold: true,
     };
   }
   // Other
