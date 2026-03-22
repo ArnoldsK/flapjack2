@@ -209,7 +209,7 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
       ctx.fill();
 
       ctx.strokeStyle = color.stroke;
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 2;
       ctx.stroke();
 
       ctx.fillStyle = color.text;
