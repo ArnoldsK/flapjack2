@@ -10,6 +10,7 @@ import createPersistentThread from "./definitions/createPersistentThread";
 import handleVideoLinks from "./definitions/handleVideoLinks";
 import interactionCreate from "./definitions/interactionCreate";
 import logGuildMemberRemove from "./definitions/logGuildMemberRemove";
+import numbersGamePlateReader from "./definitions/numbersGamePlateReader";
 import ready from "./definitions/ready";
 import unarchivePersistentThread from "./definitions/unarchivePersistentThread";
 import upperClassMessage from "./definitions/upperClassMessage";
@@ -29,6 +30,7 @@ const eventList: EventDefinition<keyof ClientEvents>[] = [
   userRoleMemberUpdate as EventDefinition<keyof ClientEvents>,
   createPersistentThread as EventDefinition<keyof ClientEvents>,
   unarchivePersistentThread as EventDefinition<keyof ClientEvents>,
+  numbersGamePlateReader as EventDefinition<keyof ClientEvents>,
 ];
 
 function groupByEvent(
