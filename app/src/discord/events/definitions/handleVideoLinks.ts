@@ -4,6 +4,7 @@ import { z } from "zod";
 import { staticConfig } from "@app/config/static";
 import { defineEvent } from "@app/discord/events/defineEvent";
 import * as Video from "@app/modules/video";
+import { fetchData } from "@app/utils/fetch";
 
 function isNonNullish<T>(x: T): x is NonNullable<T> {
   return x != null;
@@ -22,19 +23,18 @@ const getDeArrowTitle = async (videoId: string): Promise<string | null> => {
   const url = new URL("https://dearrow.minibomba.pro/sbserver/api/branding");
   url.searchParams.set("videoID", videoId);
   try {
-    const res = await fetch(url);
-    const data = (await res.json()) as unknown;
-    const { titles } = z
-      .object({
+    const data = await fetchData(
+      url,
+      z.object({
         titles: z.array(
           z.object({
             title: z.string(),
             original: z.boolean(),
           }),
         ),
-      })
-      .parse(data);
-    return titles.find((t) => !t.original)?.title ?? null;
+      }),
+    );
+    return data.titles.find((t) => !t.original)?.title ?? null;
   } catch {
     return null;
   }
@@ -45,18 +45,18 @@ const getVideoDetails = async (videoUrl: string) => {
   url.searchParams.set("dataType", "json");
   url.searchParams.set("url", videoUrl);
   try {
-    const res = await fetch(url);
-    const data = (await res.json()) as unknown;
-    return z
-      .object({
+    const data = await fetchData(
+      url,
+      z.object({
         provider_name: z.literal("YouTube"),
         title: z.string(),
         author_url: z.string().url(),
         author_name: z.string(),
         thumbnail_url: z.string().url(),
         type: z.literal("video"),
-      })
-      .parse(data);
+      }),
+    );
+    return data;
   } catch {
     return null;
   }

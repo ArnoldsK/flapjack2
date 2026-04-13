@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import type { AppContext } from "@app/context";
 import * as StaticData from "@app/modules/staticData";
+import { fetchData } from "@app/utils/fetch";
 import type { PoeScarab } from "@shared/types";
 
 const API_BASE_URL = "https://poe.ninja";
@@ -11,14 +12,13 @@ const fetchJson = async <T extends z.ZodType>(
   url: URL,
   schema: T,
 ): Promise<z.infer<T>> => {
-  const res = await fetch(url, {
+  const data = await fetchData(url, schema, {
     headers: {
       "User-Agent": "Scarab price data for a Discord server",
     },
   });
-  const json = (await res.json()) as unknown;
 
-  return schema.parse(json) as z.infer<T>;
+  return data;
 };
 
 const getLeagueName = async (): Promise<string> => {

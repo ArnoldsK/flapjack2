@@ -1,6 +1,7 @@
 import z from "zod";
 
 import type { AppContext } from "@app/context";
+import { fetchData } from "@app/utils/fetch";
 
 const API_URL = "https://api.platerecognizer.com/v1/plate-reader/";
 
@@ -61,7 +62,7 @@ export const plateReader = async (
     vehicleType: string;
   }>
 > => {
-  const response = await fetch(API_URL, {
+  const data = await fetchData(API_URL, schema, {
     method: "POST",
     body: JSON.stringify({
       upload_url: imageUrl,
@@ -75,14 +76,6 @@ export const plateReader = async (
       "Content-Type": "application/json",
     },
   });
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to recognise license plates: ${response.status} ${response.statusText}`,
-    );
-  }
-
-  const data = schema.parse(await response.json());
 
   return data.results.map((result) => ({
     plate: result.plate.toLocaleUpperCase(),
