@@ -1,3 +1,4 @@
+import * as Https from "node:https";
 import * as cheerio from "cheerio";
 
 import { staticConfig } from "@app/config/static";
@@ -35,12 +36,7 @@ export default defineJob({
       (Object.entries(SITES) as [FuelStationName, string][]).map(
         async ([name, url]) => {
           try {
-            const response = await fetch(url, {
-              headers: {
-                "User-Agent": "Flapjack/1.0 (Discord bot; fuel price monitor)",
-              },
-            });
-            const html = await response.text();
+            const html = await fetchFuelSiteHtmlWithTlsFallback(name, url);
 
             return { name, $: cheerio.load(html) };
           } catch (error) {
@@ -251,3 +247,105 @@ const getViadaFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
 
   return entries;
 };
+
+const fetchFuelSiteHtml = async (url: string): Promise<string> => {
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "Flapjack/1.0 (Discord bot; fuel price monitor)",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Unable to fetch data from ${url}: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const html = await response.text();
+
+  return html;
+};
+
+const fetchFuelSiteHtmlWithTlsFallback = async (
+  siteName: FuelStationName,
+  url: string,
+): Promise<string> => {
+  try {
+    return await fetchFuelSiteHtml(url);
+  } catch (error) {
+    if (!shouldUseInsecureTlsFallback(siteName, error)) {
+      throw error;
+    }
+
+    console.warn(
+      `[job:getFuelPrices] TLS validation failed for ${url}; retrying with insecure TLS fallback`,
+      error,
+    );
+
+    return await fetchHtmlWithInsecureTls(url);
+  }
+};
+
+const shouldUseInsecureTlsFallback = (
+  siteName: FuelStationName,
+  error: unknown,
+): boolean => {
+  if (siteName !== "Viada") {
+    return false;
+  }
+
+  if (!(error instanceof TypeError)) {
+    return false;
+  }
+
+  const cause = (error as TypeError & { cause?: { code?: unknown } }).cause;
+
+  return cause?.code === "UNABLE_TO_VERIFY_LEAF_SIGNATURE";
+};
+
+const fetchHtmlWithInsecureTls = async (url: string): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const request = Https.get(
+      url,
+      {
+        headers: {
+          "User-Agent": "Flapjack/1.0 (Discord bot; fuel price monitor)",
+        },
+        agent: new Https.Agent({
+          rejectUnauthorized: false,
+        }),
+      },
+      (response) => {
+        const statusCode = response.statusCode ?? 0;
+        const locationHeader = response.headers.location;
+        const isRedirect = statusCode >= 300 && statusCode < 400;
+
+        if (isRedirect && locationHeader) {
+          response.resume();
+          resolve(
+            fetchHtmlWithInsecureTls(new URL(locationHeader, url).toString()),
+          );
+
+          return;
+        }
+
+        if (statusCode < 200 || statusCode >= 300) {
+          response.resume();
+          reject(
+            new Error(
+              `Unable to fetch data from ${url}: ${statusCode} ${response.statusMessage ?? "Unknown status"}`,
+            ),
+          );
+
+          return;
+        }
+
+        const chunks: string[] = [];
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => chunks.push(chunk));
+        response.on("end", () => resolve(chunks.join("")));
+      },
+    );
+
+    request.on("error", reject);
+  });
