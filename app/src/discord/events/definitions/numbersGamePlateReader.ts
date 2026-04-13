@@ -21,18 +21,17 @@ export default defineEvent({
       });
       if (response.length === 0) return;
 
+      const plates = response.map((result) => {
+        const flag =
+          result.region !== "unknown" ? `:flag_${result.region}: ` : "";
+
+        return `${flag}${result.plate}`;
+      });
+
       message.reply({
-        embeds: [
-          {
-            title: "Plate reader",
-            color: message.member?.displayColor,
-            fields: response.map((result) => ({
-              name: `:flag_${result.region}: ${result.plate}`,
-              value: result.vehicleType,
-              inline: true,
-            })),
-          },
-        ],
+        embeds: plates.map((plate) => ({
+          description: plate,
+        })),
       });
     } catch (error) {
       console.error("Failed to recognise license plates", error);

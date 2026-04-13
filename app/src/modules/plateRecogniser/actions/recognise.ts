@@ -58,6 +58,7 @@ export const plateReader = async (
 ): Promise<
   Array<{
     plate: string;
+    /** Can be "unknown" */
     region: string;
     vehicleType: string;
   }>
