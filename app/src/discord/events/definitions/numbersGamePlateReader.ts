@@ -24,6 +24,8 @@ export default defineEvent({
       message.reply({
         embeds: [
           {
+            title: "Plate reader",
+            color: message.member?.displayColor,
             fields: response.map((result) => ({
               name: `:flag_${result.region}: ${result.plate}`,
               value: result.vehicleType,
