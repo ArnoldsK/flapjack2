@@ -22,6 +22,7 @@ const envSchema = z.object({
   HOSTING_URL: z.string().url().optional(),
   HOSTING_AUTH_NAME: z.string().min(1).optional(),
   HOSTING_AUTH_TOKEN: z.string().min(1).optional(),
+  PLATE_RECOGNISER_API_KEY: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

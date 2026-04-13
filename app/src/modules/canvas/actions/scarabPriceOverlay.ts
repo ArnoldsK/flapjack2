@@ -49,7 +49,7 @@ const getScarabPriceColor = (
     // B tier
     return {
       text: "rgb(1, 1, 1)",
-      stroke: "rgb(1, 1, 1)",
+      stroke: "rgb(180, 0, 255)",
       background: "rgb(180, 0, 255)",
       bold: true,
     };
@@ -58,7 +58,7 @@ const getScarabPriceColor = (
     // C tier
     return {
       text: "rgb(1, 1, 1)",
-      stroke: "rgb(1, 1, 1)",
+      stroke: "rgb(175, 120, 230)",
       background: "rgb(175, 120, 230)",
       bold: false,
     };

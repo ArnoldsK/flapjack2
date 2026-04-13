@@ -12,5 +12,11 @@
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "css.lint.unknownAtRules": "ignore",
   "jest.runMode": "on-demand",
-  "cSpell.words": ["runescape"]
+  "cSpell.words": [
+    "Middot",
+    "recognise",
+    "Recognised",
+    "Recogniser",
+    "runescape"
+  ]
 }
