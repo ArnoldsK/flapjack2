@@ -21,6 +21,10 @@ const SITES = {
 
 type FuelStationName = keyof typeof SITES;
 
+const REQUEST_HEADERS: HeadersInit = {
+  "User-Agent": "Flapjack/1.0 (Discord bot; fuel price monitor)",
+};
+
 export default defineJob({
   id: "getFuelPrices",
 
@@ -250,9 +254,7 @@ const getViadaFuelPrices = ($: cheerio.CheerioAPI): SiteFuelEntry[] => {
 
 const fetchFuelSiteHtml = async (url: string): Promise<string> => {
   const response = await fetch(url, {
-    headers: {
-      "User-Agent": "Flapjack/1.0 (Discord bot; fuel price monitor)",
-    },
+    headers: REQUEST_HEADERS,
   });
 
   if (!response.ok) {
@@ -308,9 +310,7 @@ const fetchHtmlWithInsecureTls = async (url: string): Promise<string> =>
     const request = Https.get(
       url,
       {
-        headers: {
-          "User-Agent": "Flapjack/1.0 (Discord bot; fuel price monitor)",
-        },
+        headers: REQUEST_HEADERS,
         agent: new Https.Agent({
           rejectUnauthorized: false,
         }),
