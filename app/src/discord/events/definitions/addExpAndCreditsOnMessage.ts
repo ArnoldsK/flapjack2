@@ -4,6 +4,7 @@ import { staticConfig } from "@app/config/static";
 import { defineEvent } from "@app/discord/events/defineEvent";
 import * as Credits from "@app/modules/credits";
 import * as Experience from "@app/modules/experience";
+import { embedAuthor, isTextChannel } from "@app/utils/discord";
 
 const EXP_PER_MESSAGE = 1;
 const ACTIVE_MEMBER_LEVEL = 20;
@@ -24,6 +25,7 @@ export default defineEvent({
 
     const newLevelData = Experience.utils.getExperienceLevelData(newExp);
     if (newLevelData.lvl >= ACTIVE_MEMBER_LEVEL) {
+      // Add active member role if the user does not have it
       const role = ctx.guild().roles.cache.get(staticConfig.roles.activeMember);
       if (role && !message.member.roles.cache.has(role.id)) {
         try {
@@ -34,6 +36,32 @@ export default defineEvent({
             error,
           );
         }
+      }
+
+      // Send a level-up message
+      const oldLevelData = Experience.utils.getExperienceLevelData(
+        existingExp?.exp ?? 0,
+      );
+      const channel = ctx
+        .guild()
+        .channels.cache.get(staticConfig.channels.bepsi);
+      if (
+        existingExp &&
+        newLevelData.lvl > oldLevelData.lvl &&
+        isTextChannel(channel)
+      ) {
+        await channel
+          .send({
+            embeds: [
+              {
+                author: embedAuthor(message.member),
+                title: "Level Up!",
+                description: `LVL ${newLevelData.lvl}`,
+                color: message.member.displayColor,
+              },
+            ],
+          })
+          .catch(() => {});
       }
     }
 
