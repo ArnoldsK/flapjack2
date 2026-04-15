@@ -8,6 +8,7 @@ import endReminders from "./definitions/endReminders";
 import getFuelPrices from "./definitions/getFuelPrices";
 import resetCredits from "./definitions/resetCredits";
 import resetPoeScarabsStaticData from "./definitions/resetPoeScarabsStaticData";
+import updateRsLeagueScores from "./definitions/updateRsLeagueScores";
 
 const registry: JobDefinition[] = [
   endReminders,
@@ -15,6 +16,7 @@ const registry: JobDefinition[] = [
   resetCredits,
   resetPoeScarabsStaticData,
   getFuelPrices,
+  updateRsLeagueScores,
 ];
 
 export const runById = async (

@@ -7,6 +7,7 @@ const channels = {
   logs: "546830997983854592",
   upperClass: "868434446502723625",
   runescape: "717772755508002816",
+  runescapeLeagues: "1493998892432494712",
   copyPasta: "673897295598845952",
   vTubers: "829428335288516619",
   numbersGame: "831055945022963742",

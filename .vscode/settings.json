@@ -13,7 +13,10 @@
   "css.lint.unknownAtRules": "ignore",
   "jest.runMode": "on-demand",
   "cSpell.words": [
+    "Gamemode",
+    "hiscores",
     "Middot",
+    "osrs",
     "recognise",
     "Recognised",
     "Recogniser",

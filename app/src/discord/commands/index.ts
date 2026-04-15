@@ -13,6 +13,7 @@ import ping from "./definitions/ping";
 import rank from "./definitions/rank";
 import remind from "./definitions/remind";
 import roll from "./definitions/roll";
+import rsLeague from "./definitions/rsLeague";
 import rsLoot from "./definitions/rsLoot";
 
 const commandList: SlashCommandModule[] = [
@@ -30,6 +31,7 @@ const commandList: SlashCommandModule[] = [
   coinflip,
   roll,
   fuelPrices,
+  rsLeague,
 ];
 
 export const commands = new Map<string, SlashCommandModule>(
