@@ -89,7 +89,7 @@ const updateScoresChannel = async ({
   players: PlayerData[];
 }) => {
   const embed: APIEmbed = {
-    title: "Test",
+    title: "Hiscores",
     description: players
       .map((player, i) => {
         const url = new URL(
