@@ -70,7 +70,12 @@ export default defineJob({
     }
 
     // ! Mutate sort by rank
-    players.sort((a, b) => a.rank - b.rank);
+    players.sort((a, b) => {
+      if (a.rank === -1 && b.rank !== -1) return 1;
+      if (a.rank !== -1 && b.rank === -1) return -1;
+
+      return a.rank - b.rank;
+    });
 
     await RsLeagueUser.removeByUserId(ctx, notFoundUserIds);
 
@@ -98,12 +103,14 @@ const updateScoresChannel = async ({
         );
         url.searchParams.set("user1", player.name);
 
+        const rank = player.rank === -1 ? "-" : player.rank;
+
         return [
           [
             `${i + 1}. <@${player.member.user.id}>`,
             `([${player.name}](<${url}>))`,
           ].join(" "),
-          [`  Rank: ${player.rank}`, `Score: ${player.score}`].join(
+          [`  Rank: ${rank}`, `Score: ${player.score}`].join(
             ` ${Unicode.Middot} `,
           ),
         ].join("\n");
