@@ -20,17 +20,27 @@ export default defineEvent({
       return;
     }
 
-    const attachment = message.attachments.first();
-    if (!attachment) return;
-    if (!attachment.contentType?.startsWith("image/")) return;
+    const imageAttachmentUrls = message.attachments
+      .filter(
+        (el) =>
+          el.contentType?.startsWith("image/") &&
+          !el.contentType.endsWith("gif"),
+      )
+      .map((el) => el.url);
+    if (!imageAttachmentUrls.length) return;
 
     try {
-      const response = await PlateRecogniser.plateReader(ctx, {
-        imageUrl: attachment.url,
-      });
-      if (response.length === 0) return;
+      const allResponses = await Promise.all(
+        imageAttachmentUrls.map((imageUrl) =>
+          PlateRecogniser.plateReader(ctx, {
+            imageUrl,
+          }),
+        ),
+      );
+      const results = allResponses.flat();
+      if (results.length === 0) return;
 
-      const plates = response.map((result) => {
+      const plates = results.map((result) => {
         const flag =
           result.region !== "unknown" ? `:flag_${result.region}: ` : "";
 
