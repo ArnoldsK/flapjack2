@@ -5,6 +5,11 @@ import { staticConfig } from "@app/config/static";
 import { defineEvent } from "@app/discord/events/defineEvent";
 import * as PlateRecogniser from "@app/modules/plateRecogniser";
 
+const delay = async (ms: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
 export default defineEvent({
   event: Events.MessageCreate,
   once: false,
@@ -30,13 +35,20 @@ export default defineEvent({
     if (!imageAttachmentUrls.length) return;
 
     try {
-      const allResponses = await Promise.all(
-        imageAttachmentUrls.map((imageUrl) =>
-          PlateRecogniser.plateReader(ctx, {
+      const allResponses = [];
+
+      for (const [index, imageUrl] of imageAttachmentUrls.entries()) {
+        if (index > 0) {
+          await delay(1000);
+        }
+
+        allResponses.push(
+          await PlateRecogniser.plateReader(ctx, {
             imageUrl,
           }),
-        ),
-      );
+        );
+      }
+
       const results = allResponses.flat();
       if (results.length === 0) return;
 
