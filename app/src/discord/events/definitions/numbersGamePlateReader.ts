@@ -10,6 +10,9 @@ const delay = async (ms: number): Promise<void> =>
     setTimeout(resolve, ms);
   });
 
+const formatRegionFlag = (region: string): string =>
+  `:flag_${region.toLowerCase().slice(0, 2)}: `;
+
 export default defineEvent({
   event: Events.MessageCreate,
   once: false,
@@ -54,7 +57,7 @@ export default defineEvent({
 
       const plates = results.map((result) => {
         const flag =
-          result.region !== "unknown" ? `:flag_${result.region}: ` : "";
+          result.region !== "unknown" ? formatRegionFlag(result.region) : "";
 
         return `${flag}${result.plate}`;
       });
@@ -80,7 +83,7 @@ const handleEmbedRemove = async (message: Message): Promise<boolean> => {
     return false;
   }
 
-  const embedNrRegExp = /^remove embed (\d+)$/;
+  const embedNrRegExp = /^remove (\d+)$/;
   const matches = embedNrRegExp.exec(content);
 
   if (!matches) {
@@ -121,8 +124,8 @@ const handleEmbedModify = async (message: Message): Promise<boolean> => {
     return false;
   }
 
-  const embedNrRegExp = /^edit embed (\d+) (.+)$/;
-  const matches = embedNrRegExp.exec(content);
+  const editRegExp = /^edit (\d+) (?:(\w+) )?(.+)$/;
+  const matches = editRegExp.exec(content);
 
   if (!matches) {
     return false;
@@ -133,10 +136,13 @@ const handleEmbedModify = async (message: Message): Promise<boolean> => {
     return false;
   }
 
-  const newContent = matches[2] ?? "";
-  if (!newContent) {
+  const region = matches[2];
+  const plate = matches[3] ?? "";
+  if (!plate) {
     return false;
   }
+
+  const newContent = region ? `${formatRegionFlag(region)}${plate}` : plate;
 
   const refMessage = channel.messages.cache.get(reference.messageId);
   if (!refMessage || refMessage.author.id !== message.client.user.id) {
