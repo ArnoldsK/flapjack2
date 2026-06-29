@@ -12,6 +12,7 @@ describe("effectiveCredits", () => {
         credits: 100n,
         multiplier: 1,
         last_message_at: null,
+        last_casino_at: null,
       }),
     ).toBe(100n);
     expect(
@@ -20,6 +21,7 @@ describe("effectiveCredits", () => {
         credits: 50n,
         multiplier: -1,
         last_message_at: null,
+        last_casino_at: null,
       }),
     ).toBe(-50n);
   });

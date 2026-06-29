@@ -10,6 +10,7 @@ export interface Table {
   credits: bigint;
   multiplier: number;
   last_message_at: Date | null;
+  last_casino_at: Date | null;
 }
 
 export type UpsertInput = Table;

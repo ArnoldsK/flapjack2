@@ -109,6 +109,7 @@ export default defineCommand({
       await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: -amount,
+        isCasino: true,
       });
     } catch {
       activeJbUsers.delete(userId);
@@ -148,6 +149,7 @@ export default defineCommand({
       await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: amount,
+        isCasino: true,
       });
 
       throw err;
@@ -173,6 +175,7 @@ export default defineCommand({
       const newRow = await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: result.winAmount,
+        isCasino: true,
       });
       const newCredits = Credits.utils.effectiveCredits(newRow);
 
@@ -194,6 +197,7 @@ export default defineCommand({
         const refundRow = await Credits.utils.modifyForUser(ctx, {
           userId,
           byAmount: amount,
+          isCasino: true,
         });
         const walletCredits = Credits.utils.effectiveCredits(refundRow);
 

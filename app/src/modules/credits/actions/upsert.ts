@@ -16,6 +16,7 @@ export const upsert = async (
       credits: input.credits,
       multiplier: input.multiplier,
       last_message_at: input.last_message_at,
+      last_casino_at: input.last_casino_at,
     });
   } else {
     await ctx
@@ -25,6 +26,7 @@ export const upsert = async (
         credits: input.credits,
         multiplier: input.multiplier,
         last_message_at: input.last_message_at,
+        last_casino_at: input.last_casino_at,
       });
   }
 };

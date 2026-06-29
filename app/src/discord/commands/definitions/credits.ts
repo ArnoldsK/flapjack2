@@ -16,6 +16,7 @@ enum SubcommandName {
 enum OptionName {
   User = "user",
   Amount = "amount",
+  WithInactive = "withInactive",
 }
 
 const isCasinoChannel = (channelId: string | null): boolean =>
@@ -31,7 +32,7 @@ const effective = (row: Credits.db.Table | null): bigint =>
   BigInt(row != null ? Number(row.multiplier) : 1);
 
 export default defineCommand({
-  version: 1,
+  version: 2,
 
   data: new SlashCommandBuilder()
     .setName("credits")
@@ -47,7 +48,15 @@ export default defineCommand({
         ),
     )
     .addSubcommand((sub) =>
-      sub.setName(SubcommandName.Top).setDescription("Get credits leaderboard"),
+      sub
+        .setName(SubcommandName.Top)
+        .setDescription("Get credits leaderboard")
+        .addBooleanOption((option) =>
+          option
+            .setName(OptionName.WithInactive)
+            .setDescription("Whether to include inactive users")
+            .setRequired(false),
+        ),
     )
     .addSubcommand((sub) =>
       sub
@@ -149,6 +158,9 @@ const handleTop = async (
   ctx: AppContext,
   interaction: ChatInputCommandInteraction,
 ): Promise<void> => {
+  const withInactive =
+    interaction.options.getBoolean(OptionName.WithInactive) ?? false;
+
   const guild = ctx.guild();
   const callerId = interaction.user.id;
   const now = new Date();
@@ -164,7 +176,9 @@ const handleTop = async (
     lastMessageAt: now,
   });
 
-  const rows = await Credits.getAll(ctx);
+  const rows = withInactive
+    ? await Credits.getAll(ctx)
+    : await Credits.getAllWithActive(ctx);
 
   const withEffective = rows
     .map((row) => {
@@ -183,7 +197,9 @@ const handleTop = async (
 
   if (withEffective.length === 0) {
     await interaction.reply({
-      content: "No one has any credits yet.",
+      content: withInactive
+        ? "No one has any credits yet."
+        : "No active users on the leaderboard.",
       flags: replyFlags(interaction.channelId),
     });
 
@@ -198,6 +214,9 @@ const handleTop = async (
           value: Credits.utils.formatCredits(eff),
           inline: true,
         })),
+        footer: withInactive
+          ? undefined
+          : { text: "Only active users are shown" },
       },
     ],
     flags: replyFlags(interaction.channelId),

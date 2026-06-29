@@ -9,6 +9,7 @@ export const modifyForUser = async (
     userId: string;
     byAmount: number;
     lastMessageAt?: Date;
+    isCasino?: boolean;
   },
 ): Promise<Credits.db.Table> => {
   const row = await Credits.getByUserId(ctx, params.userId);
@@ -22,6 +23,9 @@ export const modifyForUser = async (
   const lastMessageAt = params.lastMessageAt
     ? params.lastMessageAt
     : (row?.last_message_at ?? null);
+  const lastCasinoAt = params.isCasino
+    ? new Date()
+    : (row?.last_casino_at ?? null);
 
   if (delta === 0n) {
     return {
@@ -29,6 +33,7 @@ export const modifyForUser = async (
       credits,
       multiplier,
       last_message_at: lastMessageAt,
+      last_casino_at: lastCasinoAt,
     };
   }
 
@@ -37,6 +42,7 @@ export const modifyForUser = async (
     credits,
     multiplier,
     last_message_at: lastMessageAt,
+    last_casino_at: lastCasinoAt,
   });
 
   try {
@@ -56,5 +62,6 @@ export const modifyForUser = async (
     credits,
     multiplier,
     last_message_at: lastMessageAt,
+    last_casino_at: lastCasinoAt,
   };
 };

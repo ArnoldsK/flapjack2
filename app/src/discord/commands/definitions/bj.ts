@@ -136,6 +136,7 @@ export default defineCommand({
       await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: -amount,
+        isCasino: true,
       });
     } catch {
       activeBjUsers.delete(userId);
@@ -192,6 +193,7 @@ export default defineCommand({
       await Credits.utils.modifyForUser(ctx, {
         userId,
         byAmount: amount,
+        isCasino: true,
       });
 
       throw replyErr;
@@ -226,6 +228,7 @@ export default defineCommand({
           const newRow = await Credits.utils.modifyForUser(ctx, {
             userId,
             byAmount: lostAmount,
+            isCasino: true,
           });
 
           await interaction.editReply(
@@ -355,6 +358,7 @@ const handleGameOver = async (
   const newRow = await Credits.utils.modifyForUser(ctx, {
     userId,
     byAmount: wonAmount,
+    isCasino: true,
   });
   const walletCredits = Credits.utils.effectiveCredits(newRow);
   const state = game.getState();
@@ -428,6 +432,7 @@ const handleAwaitResponse = async (
     await Credits.utils.modifyForUser(ctx, {
       userId,
       byAmount: -state.initialBet,
+      isCasino: true,
     });
   }
 

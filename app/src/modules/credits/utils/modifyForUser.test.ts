@@ -31,6 +31,7 @@ describe("modifyForUser", () => {
       credits: 0n,
       multiplier: 1,
       last_message_at: null,
+      last_casino_at: null,
     });
 
     const result = await modifyForUser(ctx, {
@@ -45,6 +46,7 @@ describe("modifyForUser", () => {
       credits: 627n,
       multiplier: 1,
       last_message_at: null,
+      last_casino_at: null,
     });
   });
 
@@ -54,6 +56,7 @@ describe("modifyForUser", () => {
       credits: 1000n,
       multiplier: 1,
       last_message_at: null,
+      last_casino_at: null,
     });
 
     await modifyForUser(ctx, {
@@ -66,6 +69,7 @@ describe("modifyForUser", () => {
       credits: 899n,
       multiplier: 1,
       last_message_at: null,
+      last_casino_at: null,
     });
   });
 
@@ -75,6 +79,7 @@ describe("modifyForUser", () => {
       credits: 50n,
       multiplier: 1,
       last_message_at: null,
+      last_casino_at: null,
     });
 
     const result = await modifyForUser(ctx, {
@@ -85,5 +90,34 @@ describe("modifyForUser", () => {
     expect(result.credits).toBe(50n);
     expect(result.multiplier).toBe(1);
     expect(mockUpsert).not.toHaveBeenCalled();
+  });
+
+  it("sets last_casino_at when isCasino is true", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-06-29T12:00:00Z"));
+
+    mockGetByUserId.mockResolvedValue({
+      user_id: "u",
+      credits: 100n,
+      multiplier: 1,
+      last_message_at: null,
+      last_casino_at: null,
+    });
+
+    await modifyForUser(ctx, {
+      userId: "u",
+      byAmount: 10,
+      isCasino: true,
+    });
+
+    expect(mockUpsert).toHaveBeenCalledWith(ctx, {
+      user_id: "u",
+      credits: 110n,
+      multiplier: 1,
+      last_message_at: null,
+      last_casino_at: new Date("2026-06-29T12:00:00Z"),
+    });
+
+    jest.useRealTimers();
   });
 });
