@@ -16,7 +16,7 @@ enum SubcommandName {
 enum OptionName {
   User = "user",
   Amount = "amount",
-  WithInactive = "withInactive",
+  WithInactive = "with-inactive",
 }
 
 const isCasinoChannel = (channelId: string | null): boolean =>
