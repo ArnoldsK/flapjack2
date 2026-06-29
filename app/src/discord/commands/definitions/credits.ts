@@ -32,7 +32,7 @@ const effective = (row: Credits.db.Table | null): bigint =>
   BigInt(row != null ? Number(row.multiplier) : 1);
 
 export default defineCommand({
-  version: 2,
+  version: 3,
 
   data: new SlashCommandBuilder()
     .setName("credits")
@@ -54,7 +54,7 @@ export default defineCommand({
         .addBooleanOption((option) =>
           option
             .setName(OptionName.WithInactive)
-            .setDescription("Whether to include inactive users")
+            .setDescription("Whether to include inactive players")
             .setRequired(false),
         ),
     )
@@ -199,7 +199,7 @@ const handleTop = async (
     await interaction.reply({
       content: withInactive
         ? "No one has any credits yet."
-        : "No active users on the leaderboard.",
+        : "No active players on the leaderboard.",
       flags: replyFlags(interaction.channelId),
     });
 
@@ -216,7 +216,7 @@ const handleTop = async (
         })),
         footer: withInactive
           ? undefined
-          : { text: "Only active users are shown" },
+          : { text: "Only active players are shown" },
       },
     ],
     flags: replyFlags(interaction.channelId),
