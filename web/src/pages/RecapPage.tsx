@@ -185,9 +185,8 @@ const RecapMessageRow: FC<{
   };
 
   return (
-    <div
-      role="link"
-      tabIndex={0}
+    <a
+      href={https}
       onClick={handleClick}
       onKeyDown={onRowKeyDown}
       className="flex min-h-[52px] cursor-pointer gap-4 rounded-lg px-3 py-3 hover:bg-zinc-800/70"
@@ -254,7 +253,7 @@ const RecapMessageRow: FC<{
           </div>
         ) : null}
       </div>
-    </div>
+    </a>
   );
 };
 
