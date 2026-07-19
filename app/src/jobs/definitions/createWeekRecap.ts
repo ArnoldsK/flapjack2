@@ -28,7 +28,7 @@ const MIN_UNIQUE_REACTORS_FOR_RECAP = 5;
 export default defineJob({
   id: "createWeekRecap",
 
-  schedule: "0 1 * * 1", // every Monday at 1:00 AM
+  schedule: "1 0 * * 1", // every Monday at 1 minute past midnight
 
   description: "Create week recap",
 
@@ -96,12 +96,15 @@ const getWeekMessages = async (ctx: AppContext): Promise<Message[]> => {
 
   const isDev = ctx.env.NODE_ENV === "development";
   const now = dayjs().tz("Europe/Riga");
-  const endDate: Date = isDev
+
+  // If running on Monday (even a bit late), this safely anchors to the current week's Monday
+  const currentMonday = now.startOf("isoWeek");
+
+  const endDate = isDev
     ? now.subtract(1, "day").toDate()
-    : now.subtract(1, "week").startOf("isoWeek").toDate(); // last week Monday 0:00 Riga
-  const startDate: Date = isDev
-    ? now.toDate()
-    : now.startOf("isoWeek").toDate(); // current week Monday 0:00 Riga (exclusive cap)
+    : currentMonday.subtract(1, "week").toDate(); // Exactly last week Monday 0:00
+
+  const startDate = isDev ? now.toDate() : currentMonday.toDate(); // Exactly current week Monday 0:00
 
   const channels = guild.channels.cache.filter(
     (ch): ch is TextChannel =>
