@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import type { FC } from "react";
-import { HexColorPicker } from "react-colorful";
+import { HexColorInput, HexColorPicker } from "react-colorful";
 
 import { useDocumentTitle } from "@web/hooks/useDocumentTitle";
 
@@ -62,7 +62,9 @@ export const ColorPage: FC = () => {
             className="!w-full !aspect-square"
           />
           <div className="mt-3 space-y-1 text-sm text-zinc-300">
-            <p>Hex: {formatHex(hex1)}</p>
+            <p>
+              Hex: <HexColorInput color={formatHex(hex1)} onChange={setHex1} />
+            </p>
             <p>
               R: {rgb1.r} G: {rgb1.g} B: {rgb1.b}
             </p>
@@ -75,7 +77,9 @@ export const ColorPage: FC = () => {
             className="!w-full !aspect-square"
           />
           <div className="mt-3 space-y-1 text-sm text-zinc-300">
-            <p>Hex: {formatHex(hex2)}</p>
+            <p>
+              Hex: <HexColorInput color={formatHex(hex2)} onChange={setHex2} />
+            </p>
             <p>
               R: {rgb2.r} G: {rgb2.g} B: {rgb2.b}
             </p>
