@@ -15,21 +15,12 @@ export default defineJob({
   description: "Reset all credits and announce in casino and logs",
   productionOnly: true,
   run: async (ctx) => {
-    const botUser = ctx.client.user;
-    if (!botUser) return;
-
-    const botRow = await Credits.getByUserId(ctx, botUser.id);
-    const botCredits = Credits.utils.formatCredits(
-      Number(Credits.utils.effectiveCredits(botRow)),
-    );
-
     await Credits.deleteAll(ctx);
 
     const embeds = [
       {
         color: Color.Red,
         title: "All credits have been reset",
-        description: `${botUser.displayName} had ${botCredits}`,
       },
     ];
 
