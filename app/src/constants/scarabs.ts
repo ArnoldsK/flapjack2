@@ -214,9 +214,9 @@ export const mapping: ScarabMapping.Root = {
               scarabs: [
                 "Abyss Scarab",
                 "Abyss Scarab of Multitudes",
-                "Abyss Scarab of Edifice",
+                "Abyss Scarab of Crystals",
                 "Abyss Scarab of Descending",
-                "Abyss Scarab of Profound Depth",
+                "Abyss Scarab of the Consort",
               ],
             },
           ],
