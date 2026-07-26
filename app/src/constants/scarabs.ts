@@ -17,6 +17,10 @@ export namespace ScarabMapping {
 
   export interface Root {
     cols: Column[];
+    /**
+     * They moved Titanic scarabs to the top right, so gotta do this jank patch...
+     */
+    topRight: Column;
   }
 }
 
@@ -196,9 +200,10 @@ export const mapping: ScarabMapping.Root = {
           groups: [
             {
               scarabs: [
-                "Titanic Scarab",
-                "Titanic Scarab of Treasures",
-                "Titanic Scarab of Legend",
+                "Trarthan Scarab",
+                "Trarthan Scarab of Infamy",
+                "Trarthan Scarab of Renown",
+                "Trarthan Scarab of Surprising Alliances",
               ],
             },
           ],
@@ -451,4 +456,22 @@ export const mapping: ScarabMapping.Root = {
       ],
     },
   ],
+  topRight: {
+    gap: 14,
+    marginRight: 0,
+    isVerticallyCentered: false,
+    rows: [
+      {
+        groups: [
+          {
+            scarabs: [
+              "Titanic Scarab",
+              "Titanic Scarab of Treasures",
+              "Titanic Scarab of Legend",
+            ],
+          },
+        ],
+      },
+    ],
+  },
 };

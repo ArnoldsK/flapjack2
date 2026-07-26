@@ -117,9 +117,16 @@ export const getScarabPriceOverlay = ({
       ? START_Y + (maxColumnHeight - colCanvas.height) / 2
       : START_Y;
 
-    ctx.drawImage(colCanvas, x, y);
+    ctx.drawCanvas(colCanvas, x, y);
     x += colCanvas.width + col.marginRight;
   }
+
+  const topRightColumnCanvas = getColumnCanvas(mapping.topRight, options);
+  ctx.drawCanvas(
+    topRightColumnCanvas,
+    canvas.width - topRightColumnCanvas.width - 22, // eyeballed
+    START_Y,
+  );
 
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
@@ -143,7 +150,7 @@ const getColumnCanvas = (col: ScarabMapping.Column, options: Options) => {
 
   let y = 0;
   for (const rowCanvas of rowCanvases) {
-    ctx.drawImage(rowCanvas, 0, y);
+    ctx.drawCanvas(rowCanvas, 0, y);
     y += SCARAB_SIZE + col.gap;
   }
 
@@ -165,7 +172,7 @@ const getRowCanvas = (row: ScarabMapping.Row, options: Options) => {
 
   let x = 0;
   for (const groupCanvas of groupCanvases) {
-    ctx.drawImage(groupCanvas, x, 0);
+    ctx.drawCanvas(groupCanvas, x, 0);
     x += groupCanvas.width + SCARAB_GAP;
   }
 
