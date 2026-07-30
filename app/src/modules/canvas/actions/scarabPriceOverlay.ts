@@ -202,15 +202,16 @@ const getGroupCanvas = (group: ScarabMapping.Group, options: Options) => {
 
       const text = formatScarabPrice(chaosValue);
       const metrics = ctx.measureText(text);
+      const textHeight = metrics.emHeightAscent; // or fontBoundingBoxAscent
       const padding = 4;
 
       ctx.fillStyle = color.background;
       ctx.beginPath();
       ctx.roundRect(
         x,
-        SCARAB_SIZE - padding - metrics.emHeightAscent,
+        SCARAB_SIZE - padding - textHeight,
         SCARAB_SIZE,
-        metrics.emHeightAscent + padding,
+        textHeight + padding,
         padding,
       );
       ctx.fill();

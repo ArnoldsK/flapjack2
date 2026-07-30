@@ -17,20 +17,25 @@ const main = async () => {
   const db = createDb(env);
   await runMigrations(db);
 
+  // Pure mode will ignore Discord related stuff
+  const isPureRun = process.env.PURE_RUN === "true";
+
   const client = createDiscordClient();
   const ctx = createContext(env, client, db);
 
   await startApiServer(ctx);
-  registerJobs(ctx);
-  registerDiscordEvents(client, ctx);
 
-  await deployCommands(env, staticConfig.guildId, commands);
+  if (!isPureRun) {
+    registerJobs(ctx);
+    registerDiscordEvents(client, ctx);
+    await deployCommands(env, staticConfig.guildId, commands);
 
-  try {
-    await client.login(env.DISCORD_TOKEN);
-  } catch (error) {
-    console.error("Failed to login to Discord", error);
-    process.exit(1);
+    try {
+      await client.login(env.DISCORD_TOKEN);
+    } catch (error) {
+      console.error("Failed to login to Discord", error);
+      process.exit(1);
+    }
   }
 
   let shuttingDown = false;
