@@ -28,55 +28,55 @@ const getScarabPriceColor = (
   const rounded = Math.round(chaosValue * 10) / 10;
 
   if (rounded >= 90) {
-    // S tier
+    // S tier - Bold Green on White
     return {
-      text: "rgb(180, 0, 255)",
-      stroke: "rgb(180, 0, 255)",
+      text: "rgb(0, 160, 60)",
+      stroke: "rgb(0, 160, 60)",
       background: "rgb(255, 255, 255)",
       bold: true,
     };
   }
   if (rounded >= 35) {
-    // A tier
+    // A tier - Vivid Green
     return {
       text: "rgb(255, 255, 255)",
-      stroke: "rgb(255, 255, 255)",
-      background: "rgb(180, 0, 255)",
+      stroke: "rgb(40, 167, 69)",
+      background: "rgb(40, 167, 69)",
       bold: true,
     };
   }
   if (rounded >= 12) {
-    // B tier
+    // B tier - Lime / Yellow-Green
     return {
-      text: "rgb(1, 1, 1)",
-      stroke: "rgb(180, 0, 255)",
-      background: "rgb(180, 0, 255)",
+      text: "rgb(20, 20, 20)",
+      stroke: "rgb(140, 180, 40)",
+      background: "rgb(140, 180, 40)",
       bold: true,
     };
   }
   if (rounded >= 3) {
-    // C tier
+    // C tier - Muted Ochre / Warm Tan (Dark text prevents it from popping)
     return {
-      text: "rgb(1, 1, 1)",
-      stroke: "rgb(175, 120, 230)",
-      background: "rgb(175, 120, 230)",
+      text: "rgb(30, 20, 10)",
+      stroke: "rgb(175, 120, 50)",
+      background: "rgb(175, 120, 50)",
       bold: false,
     };
   }
   if (rounded >= 0.5) {
-    // D tier
+    // D tier - Dark Red Outline on Dark Background
     return {
-      text: "rgb(175, 120, 230)",
-      stroke: "rgb(175, 120, 230)",
-      background: "rgb(1, 1, 1)",
-      bold: true,
+      text: "rgb(200, 90, 90)",
+      stroke: "rgb(120, 35, 35)",
+      background: "rgb(35, 18, 18)",
+      bold: false,
     };
   }
-  // Other
+  // Other / Junk - Flat Dark Gray
   return {
-    text: "rgb(175, 120, 230)",
-    stroke: "rgb(1, 1, 1)",
-    background: "rgb(1, 1, 1)",
+    text: "rgb(110, 110, 110)",
+    stroke: "rgb(25, 25, 25)",
+    background: "rgb(25, 25, 25)",
     bold: false,
   };
 };
