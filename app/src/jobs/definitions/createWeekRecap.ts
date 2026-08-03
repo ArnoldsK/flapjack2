@@ -281,13 +281,14 @@ const sendAnnouncement = async (ctx: AppContext): Promise<void> => {
     return;
   }
 
-  const content = `New weekly recap at https://pepsidog.lv/recap`;
+  const weekNumber = dayjs().tz("Europe/Riga").isoWeek();
+  const content = `Week ${weekNumber} recap at https://pepsidog.lv/recap`;
 
   const messages = await channel.messages.fetch({ limit: 20 });
   const previous = messages.find(
     (m) =>
       m.author.id === guild.client.user?.id &&
-      m.content.includes("weekly recap"),
+      (m.content.includes("weekly recap") || /Week \d+ recap/.test(m.content)),
   );
 
   if (previous) {
