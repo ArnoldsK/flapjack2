@@ -132,6 +132,7 @@ export const getScarabPriceOverlay = ({
   ctx.textBaseline = "top";
   ctx.font = canvasFont(10);
   ctx.fillStyle = "#fff";
+  ctx.letterSpacing = "0px";
   ctx.fillText(formatOverlayDate(updatedAt), 0, 0);
   ctx.fillText(league, 0, 12);
 
@@ -142,14 +143,30 @@ const getColumnCanvas = (col: ScarabMapping.Column, options: Options) => {
   const rowCanvases = col.rows.map((row) => getRowCanvas(row, options));
 
   const width = Math.max(...rowCanvases.map((rc) => rc.width));
+  const labelHeight = 8; // Eyeballed
   const height =
-    rowCanvases.length * SCARAB_SIZE + (rowCanvases.length - 1) * col.gap;
+    rowCanvases.length * SCARAB_SIZE +
+    (rowCanvases.length - 1) * col.gap +
+    labelHeight;
 
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
 
   let y = 0;
-  for (const rowCanvas of rowCanvases) {
+  for (const [i, rowCanvas] of rowCanvases.entries()) {
+    const row = col.rows[i]!;
+    const rowScarabs = row.groups[0]!.scarabs;
+    const labelParts = rowScarabs[0]!.split(" ");
+    const label =
+      labelParts[rowScarabs.length > 1 ? 0 : labelParts.length - 1] ?? "";
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.font = canvasFont(8);
+    ctx.fillStyle = "#aaa";
+    ctx.letterSpacing = "-0.3px";
+    ctx.fillText(label, 0, y + SCARAB_SIZE + 2);
+
     ctx.drawCanvas(rowCanvas, 0, y);
     y += SCARAB_SIZE + col.gap;
   }
