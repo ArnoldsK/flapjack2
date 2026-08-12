@@ -5,7 +5,6 @@ import type { AppContext } from "@app/context";
 import type { JobDefinition } from "./defineJob";
 import createWeekRecap from "./definitions/createWeekRecap";
 import endReminders from "./definitions/endReminders";
-import getFuelPrices from "./definitions/getFuelPrices";
 import resetCredits from "./definitions/resetCredits";
 import resetPoeScarabsStaticData from "./definitions/resetPoeScarabsStaticData";
 import updateRsLeagueScores from "./definitions/updateRsLeagueScores";
@@ -15,7 +14,6 @@ const registry: JobDefinition[] = [
   createWeekRecap,
   resetCredits,
   resetPoeScarabsStaticData,
-  getFuelPrices,
   updateRsLeagueScores,
 ];
 

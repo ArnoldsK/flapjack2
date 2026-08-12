@@ -6,7 +6,6 @@ import boosterIcon from "./definitions/boosterIcon";
 import coinflip from "./definitions/coinflip";
 import color from "./definitions/color";
 import credits from "./definitions/credits";
-import fuelPrices from "./definitions/fuelPrices";
 import jb from "./definitions/jb";
 import job from "./definitions/job";
 import ping from "./definitions/ping";
@@ -30,7 +29,6 @@ const commandList: SlashCommandModule[] = [
   rsLoot,
   coinflip,
   roll,
-  fuelPrices,
   rsLeague,
 ];
 
