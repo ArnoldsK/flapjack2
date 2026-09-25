@@ -43,6 +43,7 @@ const VideoWithHoverPlay: FC<{
 
   const onUnmuteClick = useCallback(
     (e: React.MouseEvent) => {
+      e.preventDefault();
       e.stopPropagation();
       const video = videoRef.current;
       if (video) {
