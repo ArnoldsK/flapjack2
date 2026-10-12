@@ -368,7 +368,7 @@ export const RecapPage: FC = () => {
               className="flex flex-col"
             >
               <div className="flex flex-col">
-                <p className="mb-3 flex items-center gap-2 px-2 py-1 text-sm font-bold text-zinc-500 sticky top-[53px] z-5 bg-zinc-950/80 backdrop-blur-md">
+                <p className="mb-3 flex items-center gap-2 px-2 py-1 text-sm font-bold text-zinc-500 sticky top-13 z-5 bg-zinc-950/80 backdrop-blur-md">
                   <span aria-hidden>#</span>
                   {channel.name}
                 </p>

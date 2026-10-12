@@ -5,8 +5,8 @@ import { HeaderNav } from "@web/components/HeaderNav";
 
 export const PageLayout: FC = () => (
   <div className="flex min-h-screen flex-col">
-    <header className="sticky top-0 z-10 border-b border-zinc-800 bg-zinc-900/80 px-4 py-3 backdrop-blur-md sm:px-6">
-      <div className="mx-auto flex max-w-4xl items-center justify-between">
+    <header className="sticky top-0 z-10 border-b border-zinc-800 bg-zinc-900/80 px-4 backdrop-blur-md">
+      <div className="mx-auto flex max-w-4xl items-center justify-between h-13">
         <Link
           to="/"
           className="text-lg font-semibold text-white hover:text-zinc-200"
